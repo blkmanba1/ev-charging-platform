@@ -1,0 +1,112 @@
+# Raw-dataset adapters for SP1.
+#
+# Every dataset in data/raw/ is described here so that the loader stays generic:
+# `column_map` maps our canonical names to the dataset's own column names, and
+# `scales` converts units. Nothing here contains data — datasets stay git-ignored
+# and are recorded in data/README.md.
+#
+# Canonical names understood by `kind: sessions`
+#   start          (required)  connection timestamp
+#   end                        disconnection timestamp
+#   duration_min               session length in minutes (alternative to `end`)
+#   energy_kwh                 energy delivered
+#   power_kw                   power (used to derive energy, or energy to derive `end`)
+#   ev_id, station_id, session_id             optional identifiers
+#
+# Canonical names understood by `kind: hourly_load`
+#   timestamp      (required)  interval start
+#   energy_kwh                 energy per interval, or
+#   power_kw                   average power per interval (kW == kWh over 1 h)
+#
+# `timezone` is the timezone the file's timestamps are written in; storage is
+# always converted to UTC. `scales` multiplies a column, e.g. Wh -> kWh is 0.001.
+#
+# Fetch a registered dataset with:
+#   python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset <key>
+
+datasets:
+  # ---------------------------------------------------------------------------
+  # Yu, Q. — "Electric vehicle charging order data" (Beijing / Shanghai /
+  # Guangzhou, China), figshare, MIT licence.
+  # DOI 10.6084/m9.figshare.28263986.v1 · landing page:
+  # https://figshare.com/articles/dataset/Electric_vehicle_charging_order_data/28263986
+  #
+  # `power` in the source is the **rated power of the charging gun in kW**, not a
+  # measured delivered power, so energy is derived as power x duration. That is an
+  # upper bound on delivered energy (see data/README.md for the caveats).
+  # ---------------------------------------------------------------------------
+  cn-charging-orders:
+    kind: sessions
+    timezone: Asia/Shanghai
+    description: >-
+      figshare 28263986 "Electric vehicle charging order data" (Yu, Q.) —
+      1,295,394 charging orders from Beijing, Shanghai and Guangzhou, all three
+      public-station networks, 2024-01-17 to 2024-02-18
+    licence: MIT
+    url: https://doi.org/10.6084/m9.figshare.28263986.v1
+    paths:
+      - figshare-28263986/csv/Beijing_charge_orders/bjgunrecords.csv
+      - figshare-28263986/csv/Shanghai_charge_orders/shgunrecords.csv
+      - figshare-28263986/csv/Guangzhou_charge_orders/gzgunrecords.csv
+    column_map:
+      start: time_start
+      end: time_end
+      power_kw: power
+      station_id: stationId
+
+  cn-charging-orders-beijing:
+    kind: sessions
+    timezone: Asia/Shanghai
+    description: >-
+      figshare 28263986, Beijing subset only — 467,940 orders, 749 stations
+    licence: MIT
+    url: https://doi.org/10.6084/m9.figshare.28263986.v1
+    path: figshare-28263986/csv/Beijing_charge_orders/bjgunrecords.csv
+    column_map:
+      start: time_start
+      end: time_end
+      power_kw: power
+      station_id: stationId
+
+  cn-charging-orders-shanghai:
+    kind: sessions
+    timezone: Asia/Shanghai
+    description: >-
+      figshare 28263986, Shanghai subset only — 358,849 orders, 657 stations
+    licence: MIT
+    url: https://doi.org/10.6084/m9.figshare.28263986.v1
+    path: figshare-28263986/csv/Shanghai_charge_orders/shgunrecords.csv
+    column_map:
+      start: time_start
+      end: time_end
+      power_kw: power
+      station_id: stationId
+
+  cn-charging-orders-guangzhou:
+    kind: sessions
+    timezone: Asia/Shanghai
+    description: >-
+      figshare 28263986, Guangzhou subset only — 468,605 orders, 441 stations
+    licence: MIT
+    url: https://doi.org/10.6084/m9.figshare.28263986.v1
+    path: figshare-28263986/csv/Guangzhou_charge_orders/gzgunrecords.csv
+    column_map:
+      start: time_start
+      end: time_end
+      power_kw: power
+      station_id: stationId
+
+  # ---------------------------------------------------------------------------
+  # Template for a new dataset — copy, fill in, and add a row to the register in
+  # data/README.md in the same pull request.
+  # ---------------------------------------------------------------------------
+  # example-dataset:
+  #   kind: hourly_load
+  #   path: example/load.csv
+  #   timezone: Asia/Shanghai
+  #   description: "Example hourly station load series (placeholder)"
+  #   licence: "CC BY 4.0"
+  #   url: "https://example.invalid/dataset"
+  #   column_map:
+  #     timestamp: "datetime"
+  #     power_kw: "power"

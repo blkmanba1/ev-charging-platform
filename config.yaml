@@ -16,9 +16,14 @@ data:
 
 # Sub-project 1 — demand forecasting
 sp1:
-  dataset: ""                         # China-specific: see data/README.md
-  model: ""                           # linear | random-forest | lstm | xgboost
-  forecast_horizon_hours: 24
+  dataset: ""                         # key in subprojects/sp1-data-forecasting/config/datasets.yaml
+  model: ""                           # linear | random-forest | lstm | xgboost | "" = pick best WAPE
+  forecast_horizon_hours: 24          # day-ahead horizon
+  forecast_days: 30                   # length of the window written to the contract files
+  backtest_min_train_days: 14         # history required before the first forecast origin
+  max_charging_power_kw: 7.0          # per-vehicle power used for the "uncontrolled" baseline
+  plug_in_hour_local: 18              # local hour every EV plugs in, for that baseline
+  random_seed: 42
 
 # Sub-project 2 — smart charging scheduling
 sp2:

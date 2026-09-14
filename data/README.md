@@ -22,7 +22,60 @@ data/
 
 | Dataset | Owner (SP) | Source URL | Licence | Downloaded | Size | Notes |
 |---|---|---|---|---|---|---|
-| *(none yet — SP1 to start)* | | | | | | |
+| **Electric vehicle charging order data** (Beijing / Shanghai / Guangzhou) | SP1 | [figshare 28263986](https://figshare.com/articles/dataset/Electric_vehicle_charging_order_data/28263986) · DOI [10.6084/m9.figshare.28263986.v1](https://doi.org/10.6084/m9.figshare.28263986.v1) | **MIT** | 2026-09-14 | 13.5 MB archive · 76.9 MB CSV · 1,295,394 rows | Session-level public-station charging orders. Fetch with `python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset cn-charging-orders` — it verifies the SHA-256 before use. Details and caveats below. |
+
+### Dataset notes — figshare 28263986 (SP1, primary dataset)
+
+Verified locally from the downloaded files, not from the abstract:
+
+| Property | Measured value |
+|---|---|
+| Files | `bjgunrecords.csv`, `shgunrecords.csv`, `gzgunrecords.csv` (one per city) |
+| Header | `gunId,stationId,time_start,power,time_end` |
+| Rows | Beijing 467,940 · Shanghai 358,849 · Guangzhou 468,605 · **total 1,295,394** |
+| Stations / guns | 1,847 stations (749 BJ, 657 SH, 441 GZ) · 18,556 guns |
+| Time span | 2024-01-17 00:02 → 2024-02-18 17:38 local (33 days) |
+| Timestamps | second resolution, **naive local time** — read as `Asia/Shanghai` |
+| `power` | one of ~18 discrete values (0, 3.3, 3.5, 7, 10, 15, 30, 40, 60, 90, 120, 150 …), i.e. the **rated power of the gun in kW** |
+| Session length | median 0.74–0.92 h, mean 1.09–1.39 h, max 24 h (padded/idle connections) |
+| Missing | no vehicle id, no delivered kWh, no tariff/price, no station coordinates (only a numeric `stationId`) |
+| SHA-256 of archive | `54deec46afa5d39a6803ef15d694bcfe598f971f6551a0baf7809a1a039a060c` |
+
+**Four things a reader must know before using this data** — they are also written into every
+generated `.meta.json`:
+
+1. **`power` is a rating, not a measurement.** Energy is therefore derived as
+   `power × duration`, which is an **upper bound** on delivered energy: it ignores DC fast-charge
+   tapering and the time a car stays plugged in after charging has finished. At 1-hour resolution
+   the derived series is best described as *connected charging power* (kW ≈ kWh per interval),
+   which is the quantity the grid actually feels — but it is not metered energy.
+2. **The published abstract does not match the files.** The abstract says 769,225 orders from
+   1,702 stations for 1–31 January 2024 and mentions Beijing only implicitly; the files contain
+   1,295,394 orders from 1,847 stations spanning 17 January – 18 February 2024. The README inside
+   the archive is explicit that all three cities are included. **Cite the measured figures**, and
+   say that they were measured rather than quoted.
+3. **The abstract's "location of the charging station" claim is not supported** by the columns —
+   only a numeric `stationId` is present.
+4. **303 sessions have `time_end <= time_start`** and 3 lead with `power = 0`; the adapter pads a
+   broken session to one minute so its energy still lands in the hour it started, and zero-power
+   sessions contribute 0 kWh. Neither is silently dropped.
+
+### Second-choice datasets (evaluated, not used)
+
+Recorded so the search does not have to be repeated — see
+`data/raw/dataset-research.md` (git-ignored) for the full reconnaissance with verification logs.
+**These files are research notes, not deliverable data.**
+
+| Candidate | Why it was not chosen |
+|---|---|
+| **MP-EVData** (figshare 29882366, CC BY 4.0) | Ready-made hourly load for 10 stations, but the city is unnamed and **part of the release is explicitly AI-generated synthetic data** — it would have to be labelled as such throughout the dissertation |
+| **UrbanEV / ST-EVCDP** (Shenzhen, CC0 1.0 / MIT) | Hourly zone-level volume and duration for 275 zones — aggregated to zone level, **not session-level**, so no session behaviour and no power column |
+| **Autosun Shenzhen** (Mendeley, CC BY 4.0) | 1-minute resolution but grouped by data owner instead of station, and the norms are under-sampled |
+| **Science Data Bank / 科学数据银行 (scidb.cn)** | Two relevant Chinese datasets were found by title (CSTR 16666.11.nbsdc.Lv8h80yV, 16666.11.nbsdc.p0his6rt) but both landing pages are JavaScript-only and no licence, schema, or download link could be confirmed |
+| **China Charging Alliance / EVCIPA** | Publishes monthly national and provincial aggregates only — no time series, no sessions |
+| **Beijing / Shanghai / Shenzhen municipal platforms, State Grid / CSG** | Framed as regulatory monitoring systems; no public session-level or load time-series endpoint found |
+| **IEEE DataPort annual load dataset** | Paywalled subscription |
+
 
 ---
 
