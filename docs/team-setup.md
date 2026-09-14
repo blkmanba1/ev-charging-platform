@@ -56,27 +56,49 @@ See `docs/trello-board.md` for the full card list to create (or import).
 
 ---
 
-## 3. Communication channel — Microsoft Teams
+## 3. Communication channels
 
-**Team name:** FYP — AI-Enabled Smart EV Charging & Energy Management Platform
-**Channel:** `General` (project-wide) + a private channel per sub-project if needed.
+We use **two** channels, because no single one reaches everybody:
 
-Dr Amer Ghias uses Teams natively and the meeting invitation is already a Teams meeting, so
-this is the lowest-friction option for reaching him.
+| Channel | Who | Purpose |
+|---|---|---|
+| **QQ group** | the four students **only** | Daily coordination, quick questions, deciding the weekly commitments |
+| **Teams meeting** | students + supervisor | The scheduled individual check-ins and biweekly integration meetings |
+| **Email** | students + supervisor | Anything that needs a record: deliverables, scope changes, deadline questions |
 
-### Channels to create
+**Why the split:** Dr Ghias is based in the UK and cannot use QQ. So QQ is our internal
+workspace, and it is our responsibility to relay anything he needs to know — either in the
+Teams meeting or by email. **Never let a decision live only in the QQ group if it affects
+the supervisor or the deliverable.**
 
-| Channel | Purpose |
-|---|---|
-| `General` | Announcements, meeting links, weekly summary |
-| `Integration` | Interface questions, contract changes, Phase 3 coordination |
-| `Data` | Dataset sourcing, cleaning issues, where files live |
-| `Weekly Check-in` | Individual weekly updates, one post per person per week |
+### QQ group conventions
 
-### Weekly post template (paste into `Weekly Check-in`)
+- **One group, named clearly:** `FYP — AI-Enabled Smart EV Charging & Energy Management Platform`
+- Keep it to the four of you. Do not add the supervisor.
+- **Decisions get written to the repo, not left in chat.** If a decision is made in QQ and it
+  affects an interface, it goes into `docs/integration-contract.md` in the same week, or it
+  didn't happen.
+- Pin the essentials: the repository link, the Teams join link, and the meeting time.
+- Use `@全体成员` sparingly — only for deadlines and meeting changes.
+
+### Teams — the channel used with the supervisor
+
+Dr Amer Ghias uses Teams natively, and the meeting invitation is already a Teams meeting, so
+the scheduled meetings stay there. Join link, Meeting ID, and passcode are in the calendar
+invitation. **Accept the invitation** so attendance is tracked.
+
+Meeting links and minutes are mirrored into QQ after each meeting.
+
+### Reaching the supervisor between meetings
+
+- Email for anything needing a decision or a paper trail.
+- Do not expect a fast reply in QQ hours — he is in a different timezone (UK, UTC+0/+1).
+  China time is **7–8 hours ahead**, so his working day starts around 16:00–17:00 China time.
+
+### Weekly report template (post in the QQ group, then relay a summary to the supervisor)
 
 ```
-**Week of YYYY-MM-DD**
+**Week of YYYY-MM-DD — <name> (SP<N>)**
 - Done: …
 - Next: …
 - Blocked by: … (or "nothing")
@@ -85,13 +107,19 @@ this is the lowest-friction option for reaching him.
 
 ### Meeting rhythm (proposed by the supervisor)
 
-| Meeting | Frequency | Who | Purpose |
+| Meeting | Frequency | Who | Platform |
 |---|---|---|---|
-| Individual check-in | Weekly | Supervisor + individual student | Progress, blockers, scope questions |
-| Team integration meeting | Biweekly, Sat 14:00 China time | Supervisor + whole team | Cross-subsystem alignment, milestones |
+| Individual check-in | Weekly | Supervisor + individual student | Teams — *schedule still to be confirmed* |
+| Team integration meeting | Biweekly, Sat 14:00 China time | Supervisor + whole team | Teams (recurring series) |
 
-The Teams meeting is a **recurring biweekly series** — join link, Meeting ID, and passcode are
-in the calendar invitation. Accept the invitation so attendance is tracked.
+The team integration meeting is a **recurring biweekly Teams series** — join link, Meeting ID,
+and passcode are in the calendar invitation. Accept the invitation so attendance is tracked.
+
+**Confirmed at kickoff:** the recurring Saturday 14:00 China time slot is the *team integration
+meeting*; the weekly individual check-ins are arranged separately.
+
+After every meeting, post a short summary in the QQ group so anyone who missed it stays current,
+and save the full minutes to `docs/meeting-notes/YYYY-MM-DD.md`.
 
 ---
 

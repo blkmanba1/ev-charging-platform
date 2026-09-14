@@ -2,7 +2,8 @@
 
 > **Final Year Project** — University of Glasgow (Glasgow College UESTC)
 > **Supervisor:** Dr Amer Ghias
-> **Duration:** 6–7 months · **Meeting:** biweekly team integration (Sat 14:00 China time) + weekly individual check-in
+> **Duration:** 6–7 months · **Meeting:** biweekly team integration (Sat 14:00 China time) on Teams
+> **Region:** China · **Time resolution:** 1 hour · **Currency:** CNY (¥)
 
 An integrated software prototype that uses data analytics, machine learning, and optimisation
 to make EV charging **smarter, cheaper, and greener** — forecasting charging stress, aligning it
@@ -111,7 +112,7 @@ Recommended stacks (from the supervisor):
 | [`docs/project-description.md`](docs/project-description.md) | The official project brief (background, tasks, outcomes, prerequisites) |
 | [`docs/integration-contract.md`](docs/integration-contract.md) | **Pinned data formats between subsystems — read this first** |
 | [`docs/meeting-notes/`](docs/meeting-notes/) | One file per meeting: `YYYY-MM-DD.md` |
-| [`docs/team-setup.md`](docs/team-setup.md) | Trello board, Teams channel, and how we communicate |
+| [`docs/team-setup.md`](docs/team-setup.md) | QQ group, Teams meetings, repository access, and how we communicate |
 
 ---
 

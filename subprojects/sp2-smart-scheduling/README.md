@@ -1,4 +1,4 @@
-﻿# SP2 — Smart Charging Scheduling
+# SP2 — Smart Charging Scheduling
 
 **Owner:** Xie Letian (谢乐天)
 **Consumes:** SP1 demand forecast (`sp1-demand-forecast-v1.csv`), SP3 solar forecast
@@ -12,6 +12,11 @@
 
 ## Candidate approaches
 Linear Programming · Genetic Algorithms · Rule-Based Heuristics (Python / MATLAB)
+
+## Tariffs — China
+Use China's **peak-valley time-of-use tariff** (峰谷分时电价) from NDRC and provincial price
+bureaus. This is a genuine Chinese policy mechanism and a natural fit for the optimiser — see
+`data/README.md`. Costs are in **CNY**.
 
 ## Headline scenario
 50 EVs plugging in at 18:00 — show the platform shifting load to midnight.

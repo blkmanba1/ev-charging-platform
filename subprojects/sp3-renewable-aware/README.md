@@ -1,4 +1,4 @@
-﻿# SP3 — Renewable-Aware Charging Management
+# SP3 — Renewable-Aware Charging Management
 
 **Owner:** *not yet allocated — see the supervisor*
 **Consumes:** public solar/PV datasets
@@ -10,7 +10,9 @@
 - Analyse the impact of renewable integration on charging performance and energy consumption.
 
 ## Candidate datasets
-PVGIS · NREL NSRDB · Solcast
+**China-specific** — see `data/README.md`. ERA5 reanalysis and NASA POWER are the pragmatic
+choice (free, hourly, no registration, defensible in a dissertation); CMA / data.cma.cn provide
+measured observations where available.
 
 ## Status
 The official brief lists **five** students; the project email lists four. This sub-project is

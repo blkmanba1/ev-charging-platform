@@ -18,15 +18,15 @@ column order.
 [shared] Accept the recurring Teams calendar invitation (all 4 members)
 [shared] Write up kickoff meeting notes into docs/meeting-notes/
 [SP1] Literature review: EV charging demand forecasting methods
-[SP1] Decide dataset: ACN-Data vs Boulder vs UK National Grid
+[SP1] Decide dataset: which Chinese EV charging dataset(s) to use
 [SP2] Literature review: charging strategies and electricity tariff structures
 [SP2] Decide optimisation approach: LP / GA / rule-based heuristics
 [SP3] Literature review: solar PV generation modelling and renewable-aware charging
-[SP3] Choose solar dataset: PVGIS / NREL NSRDB / Solcast
+[SP3] Choose solar dataset: Chinese solar resource data (see data/README.md)
 [SP4] Literature review: charging monitoring dashboards
 [SP4] Decide stack: Dash/Streamlit vs React/Node.js
 [SP5] Literature review: EV charging cost and CO2 assessment methods
-[SP5] Establish baseline carbon intensity metric (gCO2/kWh)
+[SP5] Establish baseline carbon intensity metric (gCO2/kWh) for the Chinese grid
 [shared] Draft the technical report skeleton
 [shared] Set up weekly individual check-in with supervisor
 ```
@@ -35,12 +35,12 @@ column order.
 
 ```
 [shared] Kickoff meeting attendance + notes
-[shared] Create Teams channels (General, Integration, Data, Weekly Check-in)
+[shared] Create the QQ group and pin repo / Teams links
 [shared] Everyone: read docs/integration-contract.md and raise objections
-[SP1] Identify candidate public EV charging datasets and record them in data/README.md
-[SP2] Research existing ToU and dynamic electricity tariff structures
+[SP1] Identify candidate **Chinese** EV charging datasets and record them in data/README.md
+[SP2] Research Chinese ToU and peak-valley electricity tariff structures
 [SP4] Set up local development environment and confirm requirements.txt installs
-[SP5] Benchmark current commercial EV charging costs
+[SP5] Benchmark current commercial EV charging costs in China
 ```
 
 ## List 3 — 🔨 In Progress

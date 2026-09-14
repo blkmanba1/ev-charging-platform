@@ -10,12 +10,13 @@ data:
   raw_dir: "data/raw"
   interim_dir: "data/interim"
   processed_dir: "data/processed"
-  resolution: "15min"                 # to be confirmed at kickoff
-  currency: "GBP"                     # to be confirmed at kickoff
+  resolution: "1h"                    # LOCKED at kickoff
+  currency: "CNY"                     # LOCKED at kickoff
+  region: "CN"                        # datasets are China-specific
 
 # Sub-project 1 — demand forecasting
 sp1:
-  dataset: ""                         # acn-data | boulder | uk-national-grid
+  dataset: ""                         # China-specific: see data/README.md
   model: ""                           # linear | random-forest | lstm | xgboost
   forecast_horizon_hours: 24
 
@@ -28,7 +29,7 @@ sp2:
 
 # Sub-project 3 — renewable-aware charging
 sp3:
-  solar_dataset: ""                   # pvgis | nrel-nsrdb | solcast
+  solar_dataset: ""                   # China-specific: see data/README.md
 
 # Sub-project 4 — monitoring & visualisation
 sp4:
@@ -39,4 +40,4 @@ sp4:
 # Sub-project 5 — assessment
 sp5:
   baseline_scenario: "uncontrolled"
-  carbon_intensity_source: "UK National Grid"
+  carbon_intensity_source: ""         # China-specific grid carbon intensity

@@ -1,4 +1,4 @@
-﻿# SP1 — EV Charging Data Analysis and Demand Forecasting
+# SP1 — EV Charging Data Analysis and Demand Forecasting
 
 **Owner:** Xu Yuxuan (徐宇轩)
 **Consumes:** raw public datasets
@@ -11,7 +11,9 @@
 - Evaluate forecasting accuracy and model performance.
 
 ## Candidate datasets
-ACN-Data (Caltech/JPL) · Boulder, Colorado EV data · UK National Grid data
+**China-specific** — see `data/README.md` for the full table. Public session-level Chinese EV
+charging data is scarcer than US/EU equivalents; the strongest options are research datasets on
+Science Data Bank (scidb.cn), with China Charging Alliance statistics as aggregate support.
 
 ## Candidate models
 Linear Regression · Random Forest · LSTM · XGBoost

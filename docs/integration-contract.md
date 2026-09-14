@@ -1,7 +1,17 @@
 # Integration Contract — Subsystem Interfaces
 
-**Status:** v0.1 draft — to be agreed at the kickoff meeting
+**Status:** v0.2 — core decisions locked at kickoff
 **Owner:** whole team · **Change process:** open a PR, ping the affected owner(s) for review
+
+## Locked decisions
+
+| Decision | Value | Rationale |
+|---|---|---|
+| Time resolution | **1 hour** | Keeps the SP2 optimiser tractable; ample for day-ahead scheduling |
+| Currency | **CNY (¥)** | Project targets the Chinese market; all datasets are China-specific |
+| Region | **China** | EV charging data, tariffs, solar resource, and grid carbon intensity all CN |
+| Timezone for storage | **UTC** | Local display handled by SP4 |
+| Scenario hand-off format | **CSV** | Matches the time-series convention below |
 
 ---
 
@@ -22,7 +32,7 @@ So we agree the interfaces **now**, while everything is still cheap to change.
    Example: `2026-09-26T14:00:00Z`. Local time is a display concern — SP4 handles it.
    This single rule removes the most common class of integration bug.
 
-2. **Units live in the column name.** `kwh`, `kw`, `gbp`, `gco2`, `ratio`. Never assume.
+2. **Units live in the column name.** `kwh`, `kw`, `cny`, `gco2`, `ratio`. Never assume.
 
 3. **Every output file ships with a sibling `.meta.json`** carrying `schema_version`,
    `generated_at`, `generated_by` (SP id), `source`, and the units used. SP4 reads the meta,
@@ -38,8 +48,8 @@ So we agree the interfaces **now**, while everything is still cheap to change.
 
 - **Time series** → CSV (`.csv`), one header row, UTF-8, comma-separated, no index column.
 - **Scalar summaries / configuration** → JSON (`.json`), UTF-8.
-- All timestamps at a **fixed resolution per file** — state it in the meta as
-  `resolution: 15min | 30min | 1h`.
+- All timestamps at a **fixed 1-hour resolution**. `resolution` is `"1h"` in every meta file.
+  Interval boundaries are on the hour, UTC.
 - Missing values are **empty cells**, never `NaN`, `null`, `-`, or `N/A`.
 - File naming: `<sp>-<content>-<version>.csv`, e.g. `sp1-demand-forecast-v1.csv`.
 
@@ -78,8 +88,8 @@ uncoordinated "everyone plugs in at 18:00" profile. Phase 3 testing depends on t
 | `allocated_power_kw` | float | kW | Power assigned in this interval |
 | `allocated_energy_kwh` | float | kWh | Energy delivered in this interval |
 | `strategy` | string | — | `uncontrolled` \| `tou` \| `optimised` |
-| `tariff_gbp_per_kwh` | float | GBP/kWh | Tariff applied to this interval |
-| `interval_cost_gbp` | float | GBP | Cost of this interval |
+| `tariff_cny_per_kwh` | float | CNY/kWh | Tariff applied to this interval |
+| `interval_cost_cny` | float | CNY | Cost of this interval |
 
 **Scenario files** (Phase 3 "Uncontrolled vs Intelligent"):
 `data/processed/sp2-scenario-<name>-v1.csv` with the same columns, where `<name>` is
@@ -116,9 +126,9 @@ not block** — treat missing solar as zero and keep the interface clean.
   "scenario": "intelligent",
   "baseline_scenario": "uncontrolled",
   "period": { "start": "2026-09-26T00:00:00Z", "end": "2026-10-26T00:00:00Z" },
-  "cost_gbp": 412.55,
-  "baseline_cost_gbp": 587.10,
-  "cost_saving_gbp": 174.55,
+  "cost_cny": 412.55,
+  "baseline_cost_cny": 587.10,
+  "cost_saving_cny": 174.55,
   "cost_saving_ratio": 0.297,
   "co2_kg": 1180.4,
   "baseline_co2_kg": 1720.9,
@@ -130,7 +140,7 @@ not block** — treat missing solar as zero and keep the interface clean.
 ```
 
 Optional time series alongside it: `data/processed/sp5-savings-timeline-v1.csv` with
-`timestamp`, `cost_gbp`, `baseline_cost_gbp`, `co2_kg`, `baseline_co2_kg`.
+`timestamp`, `cost_cny`, `baseline_cost_cny`, `co2_kg`, `baseline_co2_kg`.
 
 ---
 
@@ -144,7 +154,7 @@ Every output file above is accompanied by `<same-name>.meta.json`:
   "generated_at": "2026-10-01T09:12:00Z",
   "generated_by": "SP1",
   "source": "ACN-Data (Caltech), 2019-2020 subset",
-  "resolution": "15min",
+  "resolution": "1h",
   "timezone": "UTC",
   "units": { "predicted_demand_kwh": "kWh" }
 }
@@ -152,10 +162,32 @@ Every output file above is accompanied by `<same-name>.meta.json`:
 
 ---
 
-## Open questions to settle at kickoff
+## Decisions made at kickoff
 
-- [ ] What **resolution** do we standardise on — 15 min or 1 h? (SP2's optimiser cost scales with it.)
-- [ ] Which **currency** for cost — GBP or CNY? (Supervisor is UK-based; display can convert in SP4.)
-- [ ] Does SP1 forecast **aggregate** demand, or **per-EV**? Affects whether SP2 schedules fleets or individuals.
-- [ ] Who owns the **shared tariff table** — SP2 or SP5?
-- [ ] Do we standardise on **JSON or CSV** for the Phase 3 scenario hand-off? (Currently: CSV.)
+- [x] **Resolution: 1 hour.** SP2's optimiser cost was the deciding factor.
+- [x] **Currency: CNY.** All datasets are China-specific, so GBP would mean an extra, pointless
+      conversion. SP4 may display another unit if the supervisor asks, but storage is CNY.
+- [x] **Scenario hand-off: CSV.**
+- [x] **Region: China.** This applies to the data as well — EV charging datasets, tariff
+      structures, solar resource, and grid carbon intensity must all be Chinese sources.
+      See `data/README.md` for candidates.
+
+> ⚠️ **Caveat on the region decision.** The supervisor's kickoff email recommended ACN-Data
+> (Caltech), Boulder Colorado, and UK National Grid data. Choosing Chinese data therefore goes
+> *against* his suggestion. It is recorded here as the team's working decision so we can start
+> immediately, but **he has been asked to confirm it** — see the reply draft. If he insists on
+> the international datasets, confirm whether he wants them *instead of* or *in addition to*
+> the Chinese data; if "in addition", SP1 expands to two datasets and this contract's
+> `resolution`/`currency` decisions still hold.
+
+## Still open
+
+- [ ] Does SP1 forecast **aggregate** demand, or **per-EV**? Affects whether SP2 schedules
+      fleets or individuals. **Blocks SP2's optimiser design — settle first.**
+- [ ] Who owns the **shared tariff table** — SP2 or SP5? (Recommendation: SP2, since SP2 is the
+      only consumer that needs it at run time; SP5 reads it read-only.)
+- [ ] Which **Chinese grid carbon intensity** source do we cite for SP5's baseline? A published
+      national/provincial factor is preferable to a self-computed one — it will need a citable
+      reference in the dissertation.
+- [ ] Does the **UK supervisor expect GBP** anywhere in the final report? If so, SP5 produces CNY
+      as the primary figure and adds a GBP conversion column at report time only.
