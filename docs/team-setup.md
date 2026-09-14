@@ -6,9 +6,12 @@ Chosen at kickoff. Keep this file updated if anything changes.
 
 ## 1. GitHub repository
 
-**https://github.com/blkmanba1/ev-charging-platform** (private)
+**https://github.com/blkmanba1/ev-charging-platform** — **public.**
 
-Everyone needs collaborator access — send your GitHub username to Xu Yuxuan (repo owner).
+There is nothing to be invited to. Just send teammates the link; they can clone it directly.
+
+> **This repository is public.** So never commit datasets, credentials, API keys, or the Teams
+> meeting link and passcode. Those live in the calendar invitation and the team's own records.
 
 ### First-time setup for each member
 

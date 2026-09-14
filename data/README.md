@@ -28,10 +28,10 @@ data/
 
 ## Candidate datasets — China-specific
 
-> **Scope decision:** the supervisor's original email suggested ACN-Data (Caltech), Boulder
-> Colorado, and UK National Grid. Those are **out of scope** — we are using Chinese data instead.
-> Worth flagging this choice to him at the next meeting so he knows why the recommended sources
-> were not used.
+> **Scope decision (supervisor-approved):** the kickoff email suggested ACN-Data (Caltech),
+> Boulder Colorado, and UK National Grid data. Those are **superseded** — we use Chinese data,
+> and **Dr Ghias has confirmed this is acceptable**. The original suggestions are recorded here
+> only so the rationale stays documented if the question comes up again.
 
 ### EV charging demand (SP1)
 

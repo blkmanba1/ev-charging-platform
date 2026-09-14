@@ -9,7 +9,7 @@
 |---|---|---|
 | Time resolution | **1 hour** | Keeps the SP2 optimiser tractable; ample for day-ahead scheduling |
 | Currency | **CNY (¥)** | Project targets the Chinese market; all datasets are China-specific |
-| Region | **China** | EV charging data, tariffs, solar resource, and grid carbon intensity all CN |
+| Region | **China** | EV charging data, tariffs, solar resource, and grid carbon intensity all CN — **approved by the supervisor** |
 | Timezone for storage | **UTC** | Local display handled by SP4 |
 | Scenario hand-off format | **CSV** | Matches the time-series convention below |
 
@@ -172,13 +172,15 @@ Every output file above is accompanied by `<same-name>.meta.json`:
       structures, solar resource, and grid carbon intensity must all be Chinese sources.
       See `data/README.md` for candidates.
 
-> ⚠️ **Caveat on the region decision.** The supervisor's kickoff email recommended ACN-Data
-> (Caltech), Boulder Colorado, and UK National Grid data. Choosing Chinese data therefore goes
-> *against* his suggestion. It is recorded here as the team's working decision so we can start
-> immediately, but **he has been asked to confirm it** — see the reply draft. If he insists on
-> the international datasets, confirm whether he wants them *instead of* or *in addition to*
-> the Chinese data; if "in addition", SP1 expands to two datasets and this contract's
-> `resolution`/`currency` decisions still hold.
+- [x] **Chinese datasets: approved by the supervisor.** The kickoff email suggested ACN-Data
+      (Caltech), Boulder Colorado, and UK National Grid data, but the team asked whether a
+      China-focused dataset would be acceptable for a project targeting the Chinese market, and
+      **Dr Ghias confirmed that Chinese data may be used.** The international datasets are
+      therefore superseded — no dual-dataset work is required.
+
+      *Housekeeping:* `data/README.md` still lists the original international suggestions under a
+      historical note. That is deliberate, so the reason for the choice stays documented if he
+      asks about it later.
 
 ## Still open
 
