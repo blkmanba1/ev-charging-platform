@@ -20,10 +20,17 @@ data/
 
 ## Dataset register
 
-| Dataset | Owner (SP) | Source URL | Licence | Downloaded | Size | Notes |
-|---|---|---|---|---|---|---|
-| **Electric Vehicle Charging Station Data** — City of Boulder, Colorado | SP1 | [open-data.bouldercolorado.gov](https://open-data.bouldercolorado.gov/) (ArcGIS Hub) | **CC0 1.0** (public domain) | 2026-09-14 | 148,136 rows · 17 cols | **Official municipal open data**, one of the three sources the supervisor recommended. Metered kWh per session. Fetch with `python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset us-boulder-ev`. |
-| **Electric vehicle charging order data** (Beijing / Shanghai / Guangzhou) | SP1 | [figshare 28263986](https://figshare.com/articles/dataset/Electric_vehicle_charging_order_data/28263986) · DOI [10.6084/m9.figshare.28263986.v1](https://doi.org/10.6084/m9.figshare.28263986.v1) | **MIT** | 2026-09-14 | 13.5 MB archive · 76.9 MB CSV · 1,295,394 rows | Third-party research dataset (not an official Chinese source). Session-level public-station orders. Fetch with `--dataset cn-charging-orders`; it verifies the SHA-256. Details and caveats below. |
+**Team decision 2026-09-14:** SP1 runs on the downloaded **official municipal sources** (Boulder =
+primary, Palo Alto = validation). The Chinese third-party dataset and the member-only Chinese
+platform material are **not used**; they stay registered below so the evaluation remains on the
+record.
+
+| Dataset | Role | Owner (SP) | Source URL | Licence | Downloaded | Size | Notes |
+|---|---|---|---|---|---|---|---|
+| **Electric Vehicle Charging Station Data** — City of Boulder, Colorado | **PRIMARY** | SP1 | [open-data.bouldercolorado.gov](https://open-data.bouldercolorado.gov/) (ArcGIS Hub) | **CC0 1.0** (public domain) | 2026-09-14 | 148,136 rows · 17 cols | Official municipal open data, one of the three sources the supervisor recommended. Metered kWh per session. `--dataset us-boulder-ev` |
+| **Electric Vehicle Charging Station Usage** — City of Palo Alto | **VALIDATION** | SP1 | [data.paloalto.gov](https://data.paloalto.gov/) | **PDDL** (public domain) | 2026-09-14 | 85.4 MB · 259,415 rows · 33 cols | Official municipal open data; 9.4 years and the only source here with a `User ID`, so it can support per-EV forecasting. `--dataset us-palo-alto-ev` |
+| **Electric vehicle charging order data** (Beijing / Shanghai / Guangzhou) | **not in use** | SP1 | [figshare 28263986](https://figshare.com/articles/dataset/Electric_vehicle_charging_order_data/28263986) · DOI [10.6084/m9.figshare.28263986.v1](https://doi.org/10.6084/m9.figshare.28263986.v1) | **MIT** | 2026-09-14 | 13.5 MB archive · 76.9 MB CSV · 1,295,394 rows | Third-party research dataset, not an official source. Kept registered for the record; `--dataset cn-charging-orders` still works. |
+| 中国充电联盟《充电设施统计数据专报》(2026-07) | **not in use** | SP1 | 会员资料（开放服务平台） | 会员内部资料，**勿再分发** | 2026-09-14 | 4.5 MB PDF · 26 页 | Monthly aggregates only (no sessions, no hourly). Not used per the team decision; kept locally under `data/raw/evcipa/` which is git-ignored. |
 
 ### Official / institutional sources evaluated (2026-09-14)
 
@@ -43,9 +50,13 @@ Full reconnaissance with verification logs: `data/raw/official-datasets-research
 
 **The consequence for the project's region lock.** None of the three sources the supervisor
 recommended is Chinese, and no *official* Chinese source publishes session-level charging data
-(see the second-choice table below). So "official data" and "China-only data" are, today,
-mutually exclusive. That is a decision for the team and the supervisor, not for SP1 — it is
-recorded here because it changes `docs/integration-contract.md`'s region and currency locks.
+(a member-account review of the China Charging Alliance platform found monthly aggregates only —
+see the register above). So "official data" and "China-only data" are, today, mutually exclusive.
+
+**Resolved 2026-09-14 (team):** SP1 uses the official **US municipal** sources. The knock-on changes
+are recorded in `docs/integration-contract.md`: the region lock moves off China, and the currency
+lock needs a decision (Boulder/Palo Alto publish **no tariff data at all**, so SP2 must source a
+US tariff schedule — that is now an open item rather than a Chinese one).
 
 ### Dataset notes — City of Boulder EV charging data (SP1, official source)
 

@@ -8,10 +8,30 @@
 | Decision | Value | Rationale |
 |---|---|---|
 | Time resolution | **1 hour** | Keeps the SP2 optimiser tractable; ample for day-ahead scheduling |
-| Currency | **CNY (¥)** | Project targets the Chinese market; all datasets are China-specific |
-| Region | **China** | EV charging data, tariffs, solar resource, and grid carbon intensity all CN — **approved by the supervisor** |
+| Currency | ~~**CNY (¥)**~~ → **see amendment A1** | Original rationale assumed China-only datasets |
+| Region | ~~**China**~~ → **see amendment A1** | Original rationale assumed China-only datasets — **approved by the supervisor** |
 | Timezone for storage | **UTC** | Local display handled by SP4 |
 | Scenario hand-off format | **CSV** | Matches the time-series convention below |
+
+### Amendments after kickoff
+
+**A1 — 2026-09-14 · Region and currency (raised by SP1; needs SP2/SP4/SP5 sign-off).**
+SP1 reviewed the three sources the supervisor recommended and searched for official Chinese
+equivalents. Finding: **no official Chinese source publishes session-level charging data**, while
+two supervisor-recommended sources (City of Boulder, City of Palo Alto) are official municipal open
+data (CC0 / PDDL) with metered kWh per session. The team therefore chose to run SP1 on the official
+non-Chinese datasets, which invalidates two locks above:
+
+- **Region:** no longer China-only. SP1's demand series and the uncontrolled baseline are for
+  **Boulder and Palo Alto (USA)**. The file formats in this document are unchanged.
+- **Currency:** CNY has no basis in these datasets — they contain **no tariff or price column at
+  all**. SP2 must source a tariff schedule for the chosen region (US utility rates) before it can
+  populate `tariff_cny_per_kwh`/`interval_cost_cny`. **Open item, owner SP2.**
+- **Column names are deliberately not renamed yet.** `tariff_cny_per_kwh` and `interval_cost_cny`
+  keep their names so nothing downstream breaks; if the team locks USD, that is a *minor* schema
+  bump and a rename in the same PR.
+- **What survives:** 1-hour resolution, UTC storage, ISO-8601 `Z` timestamps, CSV hand-off, the
+  sibling `.meta.json`, and every file/column definition below.
 
 ---
 

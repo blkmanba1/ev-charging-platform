@@ -37,7 +37,7 @@ Full detail: `docs/integration-contract.md`.
 
 | Sub-project | Owner | Directory | Phase-1 status (2026-09-14) |
 |---|---|---|---|
-| SP1 — Data Analysis & Demand Forecasting | Xu Yuxuan | `subprojects/sp1-data-forecasting/` | **implemented and running on real data** — dataset secured (figshare 28263986, MIT), 72 tests, contract outputs produced |
+| SP1 — Data Analysis & Demand Forecasting | Xu Yuxuan | `subprojects/sp1-data-forecasting/` | **Phase 1 complete** — official datasets secured (City of Boulder primary, City of Palo Alto validation), 76 tests, contract outputs produced |
 | SP2 — Smart Charging Scheduling | Xie Letian | `subprojects/sp2-smart-scheduling/` | not started |
 | SP3 — Renewable-Aware Charging Management | **unallocated** | `subprojects/sp3-renewable-aware/` | not started |
 | SP4 — Monitoring & Visualisation Platform | Li Chunren | `subprojects/sp4-monitoring-dashboard/` | not started |
@@ -47,20 +47,25 @@ Full detail: `docs/integration-contract.md`.
 
 1. **SP3 owner** — the official brief says five students; only four are assigned. Asked of the
    supervisor; awaiting an answer.
-2. **Aggregate vs per-EV forecast** — SP1 currently forecasts **aggregate** demand, because the
-   dataset secured for SP1 (figshare 28263986) has no vehicle identifier, so per-EV output is not
-   derivable from it. The question is still worth putting to the supervisor, but SP2 can design
-   its optimiser against an aggregate demand profile today; see the note in
-   `docs/integration-contract.md`.
-3. **Chinese grid carbon intensity source** for SP5's baseline — needs a citable reference.
-4. **Who owns the shared tariff table** (recommendation: SP2).
+2. **Aggregate vs per-EV forecast** — SP1 currently forecasts **aggregate** demand. The dataset
+   actually answers this differently now: Boulder has no vehicle identifier, but **Palo Alto does**
+   (`User ID`, 97% populated), so a per-EV variant is possible without new data — it is a scope
+   decision, not a data limitation. Still worth confirming with the supervisor.
+3. **Carbon intensity source** for SP5's baseline — the Chinese route is closed with the data
+   decision. Options are recorded in `data/README.md` (e.g. keyless NESO Carbon Intensity API);
+   needs a decision and a citable reference.
+4. **Who owns the shared tariff table** (recommendation: SP2) — and it is now a **blocker**: the
+   Boulder/Palo Alto data contain no tariff column, so SP2 must source a US tariff schedule before
+   it can fill `tariff_cny_per_kwh`. See integration contract amendment **A1**.
 5. **Trello board** — created? Card list is ready in `docs/trello-board.md`.
 6. **Reply email** — drafted but not sent. See the workspace's `回复导师邮件草稿.md`.
-7. **SP1 dataset (closed).** Chosen: *Electric vehicle charging order data*, figshare 28263986,
-   **MIT** licence, 1,295,394 sessions from 1,847 stations in Beijing / Shanghai / Guangzhou,
-   2024-01-17 → 2024-02-18. Download is scripted and SHA-256-verified; caveats (the source `power`
-   column is a *rating*, and the published abstract disagrees with the files) are documented in
-   `data/README.md`. `data/raw/dataset-research.md` (git-ignored) holds the full reconnaissance.
+7. **SP1 dataset (closed 2026-09-14).** Chosen: **City of Boulder** (official municipal open data,
+   **CC0 1.0**, 148,136 sessions, 5.9 years, metered kWh) as primary, **City of Palo Alto**
+   (official, PDDL, 259,415 sessions, 9.4 years, per-user IDs) as validation — both
+   supervisor-recommended, both fetchable with no registration, both scripted in
+   `scripts/fetch_datasets.py`. **Not used:** the Chinese third-party figshare dataset and China
+   Charging Alliance member material (monthly aggregates only, verified with a member account).
+   Full source evaluation: `data/README.md`.
 
 ## 5. Where to start implementing
 
