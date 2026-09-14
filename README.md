@@ -113,6 +113,7 @@ Recommended stacks (from the supervisor):
 | [`docs/integration-contract.md`](docs/integration-contract.md) | **Pinned data formats between subsystems — read this first** |
 | [`docs/meeting-notes/`](docs/meeting-notes/) | One file per meeting: `YYYY-MM-DD.md` |
 | [`docs/team-setup.md`](docs/team-setup.md) | QQ group, Teams meetings, repository access, and how we communicate |
+| [`docs/handoff.md`](docs/handoff.md) | **Current project state — start here if you are new to the repo** |
 
 ---
 
