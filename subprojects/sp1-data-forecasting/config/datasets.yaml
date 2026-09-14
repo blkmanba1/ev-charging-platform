@@ -31,6 +31,9 @@ datasets:
   # one of the three sources the supervisor originally recommended.
   # https://open-data.bouldercolorado.gov/
   #
+  # PRIMARY DATASET for SP1 (team decision 2026-09-14: the downloaded official
+  # non-Chinese sources are used; the Chinese and member-only sources are not).
+  #
   # Notes that matter for modelling:
   #  * `Energy__kWh_` is METERED delivered energy (not a rated power), so this
   #    dataset does not need the power x duration approximation.
@@ -56,14 +59,47 @@ datasets:
       station_id: Station_Name
 
   # ---------------------------------------------------------------------------
+  # City of Palo Alto Open Data — "Electric Vehicle Charging Station Usage
+  # (July 2011 - Dec 2020)", PDDL (public domain dedication). Official municipal
+  # open data: 9.4 years, 259,415 sessions.
+  #
+  # VALIDATION dataset (team decision 2026-09-14): longer history than Boulder and
+  # the only open source here carrying a `User ID`, so it is the one that could
+  # support *per-EV* forecasting if the team decides to answer that open contract
+  # question.
+  #
+  # Same traps as Boulder (both are ChargePoint exports): use the charging time,
+  # not the occupancy window, and energy is metered rather than rated.
+  # ---------------------------------------------------------------------------
+  us-palo-alto-ev:
+    kind: sessions
+    timezone: America/Los_Angeles
+    description: >-
+      City of Palo Alto Open Data, "Electric Vehicle Charging Station Usage
+      (July 2011 - Dec 2020)" — 259,415 charging transactions at 47 city
+      stations, metered energy in kWh, per-user IDs, PDDL
+    licence: PDDL (public domain dedication)
+    url: https://data.paloalto.gov/
+    path: palo-alto-194693/ChargePoint_Data_2011-2020.download
+    column_map:
+      start: Start Date
+      energy_kwh: Energy (kWh)
+      duration_min: Charging Time (hh:mm:ss)
+      station_id: Station Name
+      ev_id: User ID
+
+  # ---------------------------------------------------------------------------
   # Yu, Q. — "Electric vehicle charging order data" (Beijing / Shanghai /
   # Guangzhou, China), figshare, MIT licence.
-  # DOI 10.6084/m9.figshare.28263986.v1 · landing page:
-  # https://figshare.com/articles/dataset/Electric_vehicle_charging_order_data/28263986
+  # DOI 10.6084/m9.figshare.28263986.v1
+  #
+  # NOT IN USE (team decision 2026-09-14). Kept registered so the evaluation stays
+  # on record and anyone can re-run it, but the contract outputs come from the
+  # official non-Chinese sources above.
   #
   # `power` in the source is the **rated power of the charging gun in kW**, not a
-  # measured delivered power, so energy is derived as power x duration. That is an
-  # upper bound on delivered energy (see data/README.md for the caveats).
+  # measured delivered power, so energy is derived as power x duration — an upper
+  # bound on delivered energy (see data/README.md).
   # ---------------------------------------------------------------------------
   cn-charging-orders:
     kind: sessions

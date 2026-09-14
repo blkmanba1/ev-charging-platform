@@ -4,14 +4,17 @@
 project:
   name: "AI-Enabled Smart EV Charging and Energy Management Platform"
   supervisor: "Dr Amer Ghias"
-  timezone_display: "Asia/Shanghai"   # storage is always UTC
+  # Display timezone for SP4 only. Calendar features, the local-hour pattern
+  # analysis and the forecast-origin anchor use each dataset's OWN timezone
+  # (datasets.yaml) — never this value. Storage is always UTC.
+  timezone_display: "America/Denver"
 
 data:
   raw_dir: "data/raw"
   interim_dir: "data/interim"
   processed_dir: "data/processed"
   resolution: "1h"                    # LOCKED at kickoff
-  currency: "CNY"                     # LOCKED at kickoff
+  currency: "CNY"                     # see docs/integration-contract.md amendment A1
   region: "CN"                        # datasets are China-specific
 
 # Sub-project 1 — demand forecasting

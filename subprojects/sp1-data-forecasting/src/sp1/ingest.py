@@ -363,10 +363,12 @@ def _read_csv(spec: DatasetSpec) -> pd.DataFrame:
             "download it and record it in data/README.md."
         )
     # Chinese datasets are frequently distributed as GBK/GB18030, not UTF-8.
+    # ``low_memory=False`` also silences the mixed-type DtypeWarning these
+    # government exports trigger (their columns arrive as strings).
     last_error: Exception | None = None
     for encoding in ("utf-8-sig", "utf-8", "gb18030"):
         try:
-            return pd.read_csv(spec.path, encoding=encoding)
+            return pd.read_csv(spec.path, encoding=encoding, low_memory=False)
         except UnicodeDecodeError as error:
             last_error = error
     raise ContractError(f"{spec.key}: could not decode {spec.path.name}: {last_error}")

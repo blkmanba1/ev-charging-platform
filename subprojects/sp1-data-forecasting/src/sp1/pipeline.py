@@ -1,4 +1,4 @@
-"""End-to-end SP1 pipeline: raw dataset -> contract-compliant outputs.
+﻿"""End-to-end SP1 pipeline: raw dataset -> contract-compliant outputs.
 
 What one run does:
 
@@ -124,6 +124,31 @@ def build_feature_frame(
     )
 
 
+def _modelling_slice(
+    demand: pd.DataFrame, settings: Sp1Settings, forecast_days: int
+) -> pd.DataFrame:
+    """Trim the history the models can actually use.
+
+    Without this, a multi-year series becomes a supervised matrix of millions of
+    rows that the configured training window then discards. With a bounded
+    training window only ``train_window_days + forecast_days`` (plus the lag
+    warm-up) can ever be used, so that is all we build features for. The full
+    series still feeds the pattern analysis and the interim outputs.
+
+    Returns
+    -------
+    pandas.DataFrame
+        The full series when no training cap is configured, otherwise its tail.
+    """
+    if not settings.train_window_days:
+        return demand
+    warmup_hours = 24 * 8  # covers the 168-hour lag/rolling warm-up
+    keep = (settings.train_window_days + forecast_days) * 24 + warmup_hours
+    if len(demand) <= keep:
+        return demand
+    return demand.tail(keep).reset_index(drop=True)
+
+
 def run_pipeline(
     settings: Sp1Settings,
     sessions: pd.DataFrame | None = None,
@@ -134,6 +159,7 @@ def run_pipeline(
     model_names: list[str] | None = None,
     horizon: int | None = None,
     forecast_days: int | None = None,
+    local_tz: str | None = None,
     write_interim: bool = True,
 ) -> PipelineResult:
     """Run the whole SP1 pipeline and write the contract outputs.
@@ -153,6 +179,10 @@ def run_pipeline(
         Recorded in the meta files. **Must** be True for generated data.
     provenance : dict | None
         Extra provenance keys (licence, url, calibration) for the meta files.
+    local_tz : str | None
+        Timezone used for calendar features, the local-hour pattern analysis and
+        the anchoring of forecast origins. **Pass the dataset's own timezone** 鈥?        falling back to the project display timezone is how a US dataset ends up
+        analysed on Beijing hours.
     model_names : list of str | None
         Restrict the model zoo; defaults to every available model.
     horizon : int | None
@@ -183,13 +213,18 @@ def run_pipeline(
     if not source_label:
         raise ContractError("source_label is required: every output must state its provenance")
 
+    # The dataset's own timezone drives the calendar features, the local-hour
+    # pattern analysis and the forecast-origin anchor. The project setting is only
+    # a fallback (it is the display timezone SP4 uses).
+    analysis_tz = local_tz or settings.local_tz
+
     if sessions is not None:
         demand = complete_grid(build_hourly_demand(sessions))
         baseline_raw = build_uncontrolled_profile(
             sessions,
             plug_in_hour_local=settings.plug_in_hour_local,
             max_power_kw=settings.max_charging_power_kw,
-            local_tz=settings.local_tz,
+            local_tz=analysis_tz,
         )
         baseline_definition = (
             f"uncontrolled: every session's energy is moved to a block starting "
@@ -216,7 +251,9 @@ def run_pipeline(
             f"{horizon + 24 * settings.backtest_min_train_days} for training plus one horizon"
         )
 
-    feature_frame = build_feature_frame(demand, local_tz=settings.local_tz)
+    feature_frame = build_feature_frame(
+        _modelling_slice(demand, settings, forecast_days), local_tz=analysis_tz
+    )
     n_origins = max(1, forecast_days)
 
     models = build_models(random_state=settings.random_seed)
@@ -234,7 +271,7 @@ def run_pipeline(
         min_train_intervals=24 * settings.backtest_min_train_days,
         n_origins=n_origins,
         origin_hour_local=0,
-        local_tz=settings.local_tz,
+        local_tz=analysis_tz,
         train_window_intervals=24 * settings.train_window_days if settings.train_window_days else None,
     )
     ranking = ranking_table(results)
@@ -362,7 +399,7 @@ def run_pipeline(
         )
         interim_paths["metrics"] = metrics_path
 
-        patterns = profile(demand, local_tz=settings.local_tz)
+        patterns = profile(demand, local_tz=analysis_tz)
         patterns_path = settings.interim_dir / PATTERNS_FILENAME
         payload = {
             "source": source_label,

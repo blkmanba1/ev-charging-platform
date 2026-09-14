@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+import pandas as pd
 import pytest
 from sp1.config import Sp1Settings
 from sp1.contract import (
@@ -112,6 +113,33 @@ def test_pipeline_is_deterministic(tmp_path, sessions):
     second = read_series_csv(tmp_path / "b" / "processed" / FORECAST_FILENAME)
     assert first["predicted_demand_kwh"].tolist() == second["predicted_demand_kwh"].tolist()
     assert first["lower_bound_kwh"].tolist() == second["lower_bound_kwh"].tolist()
+
+
+def test_pattern_summary_uses_the_dataset_timezone(tmp_path, sessions):
+    """The local-hour profile must follow the dataset's timezone, not the project's.
+
+    Regression test: the pattern analysis once used the project display timezone
+    for every dataset, which silently turned a US workplace midday peak into a
+    "03:00 peak" because the hours were Beijing hours.
+    """
+
+    def peak_hour(directory) -> int:
+        payload = json.loads(
+            (directory / "interim" / PATTERNS_FILENAME).read_text(encoding="utf-8")
+        )
+        by_hour = {row["local_hour"]: row["share_of_energy"] for row in payload["by_local_hour"]}
+        return max(by_hour, key=by_hour.get)
+
+    _run(tmp_path / "sh", sessions, local_tz="Asia/Shanghai")
+    _run(tmp_path / "denver", sessions, local_tz="America/Denver")
+
+    shanghai_peak = peak_hour(tmp_path / "sh")
+    denver_peak = peak_hour(tmp_path / "denver")
+
+    probe = pd.Timestamp("2025-01-20 12:00", tz="Asia/Shanghai")
+    shift = (probe.tz_convert("America/Denver").hour - probe.hour) % 24
+    assert shift != 0  # otherwise this test proves nothing
+    assert denver_peak == (shanghai_peak + shift) % 24
 
 
 def test_baseline_shifts_energy_into_the_local_evening(tmp_path, sessions):

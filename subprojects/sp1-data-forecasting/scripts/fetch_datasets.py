@@ -62,6 +62,27 @@ REGISTRY: dict[str, dict] = {
         "landing_url": "https://ev.caltech.edu/dataset",
         "run": "--dataset us-caltech-acn",
     },
+    "us-palo-alto-ev": {
+        "kind": "file",
+        "dir": "palo-alto-194693",
+        "url": (
+            "https://data.paloalto.gov/datasets/"
+            "194693-electric-vehicle-charging-station-usage-july-2011-dec-2020.download/"
+        ),
+        "filename": "ChargePoint_Data_2011-2020.download",
+        "size_bytes": 85_445_823,
+        "sha256": "e65f5f5d3861cdd6bf3da2de97aabe590d7708e001db1532202eec52081ba82c",
+        "licence": "PDDL (public domain dedication)",
+        "citation": (
+            "City of Palo Alto Open Data, 'Electric Vehicle Charging Station Usage "
+            "(July 2011 - Dec 2020)', data.paloalto.gov"
+        ),
+        "landing_url": (
+            "https://data.paloalto.gov/datasets/"
+            "194693-electric-vehicle-charging-station-usage-july-2011-dec-2020/"
+        ),
+        "run": "--dataset us-palo-alto-ev",
+    },
     "us-boulder-ev": {
         "kind": "arcgis",
         "dir": "boulder-ev",
@@ -150,11 +171,14 @@ def main(argv: list[str] | None = None) -> int:
         else:
             archive = directory / entry["filename"]
             _download(entry["url"], archive, entry, force=args.force)
-            target = directory / entry["extract_to"]
-            _unpack(archive, target)
-            for nested in entry.get("nested_archives", []):
-                _unpack_nested(archive, nested, target)
-            print(f"[{key}] ready under {target}")
+            if entry.get("extract_to"):
+                target = directory / entry["extract_to"]
+                _unpack(archive, target)
+                for nested in entry.get("nested_archives", []):
+                    _unpack_nested(archive, nested, target)
+                print(f"[{key}] ready under {target}")
+            else:
+                print(f"[{key}] ready: {archive}")
 
         print(f"[{key}] next: python subprojects/sp1-data-forecasting/scripts/run_sp1.py {entry['run']}")
     return 0
@@ -364,7 +388,10 @@ def _download(url: str, destination: Path, entry: dict, force: bool) -> None:
             return
         print(f"  {destination.name} failed verification; re-downloading")
     print(f"  downloading {url}")
-    with urllib.request.urlopen(url) as response, destination.open("wb") as handle:
+    request = urllib.request.Request(
+        url, headers={"User-Agent": "ev-charging-platform/SP1 (academic use)"}
+    )
+    with urllib.request.urlopen(request, timeout=300) as response, destination.open("wb") as handle:
         shutil.copyfileobj(response, handle)
     if not _verify(destination, entry):
         raise SystemExit(

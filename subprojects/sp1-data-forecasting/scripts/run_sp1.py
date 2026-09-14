@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 # Make ``src/`` importable without installing the package (see CONTRIBUTING.md:
@@ -85,6 +86,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--models", help="comma-separated model names (default: all)")
     parser.add_argument("--horizon", type=int, default=None, help="forecast horizon in hours")
     parser.add_argument("--forecast-days", type=int, default=None, help="output window in days")
+    parser.add_argument(
+        "--train-window-days", type=int, default=None,
+        help="cap the training history per origin (0 = use everything)",
+    )
     parser.add_argument("--source-label", default=None, help="override the provenance string")
     parser.add_argument("--no-interim", action="store_true", help="skip data/interim outputs")
 
@@ -108,6 +113,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     model_names = [m.strip() for m in args.models.split(",")] if args.models else None
+    if args.train_window_days is not None:
+        settings = replace(settings, train_window_days=args.train_window_days)
 
     if args.synthetic:
         synthetic_settings = SyntheticSettings(n_evs=args.evs, days=args.days)
@@ -141,6 +148,7 @@ def main(argv: list[str] | None = None) -> int:
             model_names=model_names,
             horizon=args.horizon,
             forecast_days=args.forecast_days,
+            local_tz=spec.timezone,
             write_interim=not args.no_interim,
         )
         summary = {**result.summary, "n_sessions": len(table)}
@@ -153,6 +161,7 @@ def main(argv: list[str] | None = None) -> int:
             model_names=model_names,
             horizon=args.horizon,
             forecast_days=args.forecast_days,
+            local_tz=spec.timezone,
             write_interim=not args.no_interim,
         )
         summary = {**result.summary, "n_intervals": len(table)}
