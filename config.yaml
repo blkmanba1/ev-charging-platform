@@ -21,6 +21,7 @@ sp1:
   forecast_horizon_hours: 24          # day-ahead horizon
   forecast_days: 30                   # length of the window written to the contract files
   backtest_min_train_days: 14         # history required before the first forecast origin
+  train_window_days: 365              # training history cap per origin (0 = use everything)
   max_charging_power_kw: 7.0          # per-vehicle power used for the "uncontrolled" baseline
   plug_in_hour_local: 18              # local hour every EV plugs in, for that baseline
   random_seed: 42

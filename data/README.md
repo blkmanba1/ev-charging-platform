@@ -22,9 +22,62 @@ data/
 
 | Dataset | Owner (SP) | Source URL | Licence | Downloaded | Size | Notes |
 |---|---|---|---|---|---|---|
-| **Electric vehicle charging order data** (Beijing / Shanghai / Guangzhou) | SP1 | [figshare 28263986](https://figshare.com/articles/dataset/Electric_vehicle_charging_order_data/28263986) · DOI [10.6084/m9.figshare.28263986.v1](https://doi.org/10.6084/m9.figshare.28263986.v1) | **MIT** | 2026-09-14 | 13.5 MB archive · 76.9 MB CSV · 1,295,394 rows | Session-level public-station charging orders. Fetch with `python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset cn-charging-orders` — it verifies the SHA-256 before use. Details and caveats below. |
+| **Electric Vehicle Charging Station Data** — City of Boulder, Colorado | SP1 | [open-data.bouldercolorado.gov](https://open-data.bouldercolorado.gov/) (ArcGIS Hub) | **CC0 1.0** (public domain) | 2026-09-14 | 148,136 rows · 17 cols | **Official municipal open data**, one of the three sources the supervisor recommended. Metered kWh per session. Fetch with `python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset us-boulder-ev`. |
+| **Electric vehicle charging order data** (Beijing / Shanghai / Guangzhou) | SP1 | [figshare 28263986](https://figshare.com/articles/dataset/Electric_vehicle_charging_order_data/28263986) · DOI [10.6084/m9.figshare.28263986.v1](https://doi.org/10.6084/m9.figshare.28263986.v1) | **MIT** | 2026-09-14 | 13.5 MB archive · 76.9 MB CSV · 1,295,394 rows | Third-party research dataset (not an official Chinese source). Session-level public-station orders. Fetch with `--dataset cn-charging-orders`; it verifies the SHA-256. Details and caveats below. |
 
-### Dataset notes — figshare 28263986 (SP1, primary dataset)
+### Official / institutional sources evaluated (2026-09-14)
+
+The supervisor's kickoff email named three sources. All three were checked against the live
+services; the verdicts below are what we actually observed, not what the pages claim.
+Full reconnaissance with verification logs: `data/raw/official-datasets-research.md` (git-ignored).
+
+| Source | Official? | EV charging data? | Access observed | Verdict |
+|---|---|---|---|---|
+| **City of Boulder EV Charging Station Data** | ✅ City of Boulder (US municipal government) | ✅ session-level, **metered kWh** | ArcGIS FeatureServer, **no registration** — 148,136 rows pulled | **In use as SP1's official dataset.** CC0 1.0 |
+| **Caltech ACN-Data** | ✅ Caltech + PowerFlex | ✅ session-level **plus measured power time series**, per-user IDs, 3 site types | API returns **HTTP 401** without a token; token comes from a free self-service registration (`ev.caltech.edu/register`, "educational and research purposes" only) | Obtainable after a ~2-minute registration by a team member. Strongest data of the set; no redistribution granted, so it stays git-ignored like every dataset |
+| **City of Palo Alto EV Charging Station Usage** | ✅ City of Palo Alto (US municipal government) | ✅ session-level, metered kWh, **has `User ID`** | Direct CSV download, **no registration** — 85,445,823 bytes (259,415 rows, 2011–2020) already fetched | Strong alternative; the only open source here that supports **per-EV** forecasting. Licence: PDDL (public domain) |
+| **UK National Grid / NESO** | ✅ National Energy System Operator (renamed from National Grid ESO in 2024) | ❌ **none** — GB national system demand, half-hourly | CKAN API + yearly CSVs, no registration (2001–2025) | **Not an EV dataset.** Use as grid context: peak/valley windows, load headroom for SP2 |
+| **NESO Carbon Intensity API** | ✅ NESO | ❌ (gCO₂/kWh, 30-min, national + 14 GB regions) | Public API, keyless, CC BY 4.0 | Use for SP5's carbon baseline — this closes the "which carbon intensity source" open item |
+| **ElaadNL Open Data** (Netherlands) | ✅ ElaadNL knowledge centre | ⚠️ aggregated/normalised charging profiles (public/workplace/private); raw session sets published historically | Open data platform | Viable alternative if EU context is preferred |
+| **Elexon** (UK settlement data) | ✅ Elexon | ❌ | **Unreachable from this network** — HTTP 403 from an Azure gateway on every endpoint tried | Unverified; retry from another network before citing |
+
+**The consequence for the project's region lock.** None of the three sources the supervisor
+recommended is Chinese, and no *official* Chinese source publishes session-level charging data
+(see the second-choice table below). So "official data" and "China-only data" are, today,
+mutually exclusive. That is a decision for the team and the supervisor, not for SP1 — it is
+recorded here because it changes `docs/integration-contract.md`'s region and currency locks.
+
+### Dataset notes — City of Boulder EV charging data (SP1, official source)
+
+Verified locally from the downloaded file, not from the catalogue description:
+
+| Property | Measured value |
+|---|---|
+| Publisher | City of Boulder Open Data (ArcGIS Hub instance), backing service `Electric_Vehicle_Charging_Station_Data/FeatureServer/0` |
+| Rows / columns | **148,136** transactions · 17 columns, all delivered as **strings** (cast on load) |
+| Time span | 2018-01-02 00:49 → 2023-12-01 10:17 (UTC), i.e. **5.9 years** |
+| Stations | **50** city-owned stations, all `Port Type = Level 2`, all in Boulder, Colorado |
+| Energy | **metered delivered energy** (`Energy__kWh_`), mean 8.46 kWh, median 6.22 kWh, total 1.253 GWh |
+| Zero-energy rows | **16,113 (10.9%)** have `Energy (kWh) <= 0` — plugged in without energy dispensed. They add no load but do appear in session counts |
+| Timing | `Start_Date___Time` minute-resolution local time; timezone read as `America/Denver`, so DST is handled correctly |
+| Licence | **CC0 1.0 Universal (public domain dedication)** — stated on the catalogue record and the ArcGIS item metadata |
+
+**Two traps this dataset sets, and how the adapter handles them:**
+
+1. **Occupancy ≠ charging time.** The dataset publishes both `Total_Duration` and `Charging_Time`. Median
+   occupancy is 1.55 h but the tail runs to **839 h** (cars left plugged in for weeks). Spreading a
+   session's energy across occupancy would smear the load profile into nonsense, so the adapter maps
+   `duration_min` to `Charging_Time` (median 1.39 h, p99 8.3 h) and takes the session window as
+   `start → start + Charging_Time`.
+2. **No intra-session power curve.** Unlike Caltech's ACN-Data, there is no measured current trace,
+   so the 1-hour profile is *derived* by spreading metered energy evenly across the charging window.
+   That is a modelled assumption and it is stated in the generated `.meta.json`.
+
+Resulting pattern (local hour, mean across the record): ramp from 06:00, **peak 10:00–13:00**
+(~46–47 kWh/h), evening decline, trough 03:00–05:00. That is a **workplace/municipal Level 2
+profile** — see the SP1 README for what it means for the project's evening-peak narrative.
+
+### Dataset notes — figshare 28263986 (SP1, third-party Chinese dataset)
 
 Verified locally from the downloaded files, not from the abstract:
 

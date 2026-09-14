@@ -99,6 +99,8 @@ class Sp1Settings:
         Length of the evaluation/output window written to the contract files.
     backtest_min_train_days : int
         Minimum training history before the first forecast origin.
+    train_window_days : int
+        Training history cap per origin; 0 means "use everything".
     model : str
         Model name to use for the contract output; empty means "pick the best".
     max_charging_power_kw : float
@@ -116,6 +118,7 @@ class Sp1Settings:
     forecast_horizon_hours: int = 24
     forecast_days: int = 30
     backtest_min_train_days: int = 14
+    train_window_days: int = 365
     model: str = ""
     max_charging_power_kw: float = 7.0
     plug_in_hour_local: int = 18
@@ -136,6 +139,7 @@ def sp1_settings(config: dict | None = None, root: str | Path | None = None) -> 
         forecast_horizon_hours=int(sp1.get("forecast_horizon_hours", 24)),
         forecast_days=int(sp1.get("forecast_days", 30)),
         backtest_min_train_days=int(sp1.get("backtest_min_train_days", 14)),
+        train_window_days=int(sp1.get("train_window_days", 365)),
         model=str(sp1.get("model", "") or ""),
         max_charging_power_kw=float(sp1.get("max_charging_power_kw", 7.0)),
         plug_in_hour_local=int(sp1.get("plug_in_hour_local", 18)),

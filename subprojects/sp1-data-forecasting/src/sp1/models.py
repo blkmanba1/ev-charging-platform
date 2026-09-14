@@ -215,6 +215,7 @@ def rolling_backtest(
     n_origins: int | None = None,
     origin_hour_local: int | None = 0,
     local_tz: str = LOCAL_TZ,
+    train_window_intervals: int | None = None,
 ) -> BacktestResult:
     """Forecast every interval in the evaluation window, one origin at a time.
 
@@ -249,6 +250,11 @@ def rolling_backtest(
         happens to offer.
     local_tz : str
         Timezone used for ``origin_hour_local``.
+    train_window_intervals : int | None
+        Cap the training history to this many intervals before each origin
+        (``24 * 365`` = one year). ``None`` uses all history, which is correct
+        but slow on multi-year datasets; a bounded window is also what an
+        operational forecaster would actually do.
 
     Returns
     -------
@@ -302,6 +308,9 @@ def rolling_backtest(
             continue
         # DatetimeIndex comparison already yields a numpy boolean array.
         train_mask = np.asarray(target_timestamps < origin)
+        if train_window_intervals:
+            window_start = pd.Timestamp(origin) - pd.Timedelta(hours=train_window_intervals)
+            train_mask &= np.asarray(pd.DatetimeIndex(index["origin"]) >= window_start)
         test_mask = np.asarray(index["origin"] == origin)
         fitted = model.fit(X[train_mask], y[train_mask])
         predicted = np.asarray(fitted.predict(X[test_mask]), dtype="float64")
@@ -387,6 +396,7 @@ def evaluate_models(
     n_origins: int | None = None,
     origin_hour_local: int | None = 0,
     local_tz: str = LOCAL_TZ,
+    train_window_intervals: int | None = None,
 ) -> dict[str, BacktestResult]:
     """Run :func:`rolling_backtest` for every model and return the results.
 
@@ -410,6 +420,7 @@ def evaluate_models(
             n_origins=n_origins,
             origin_hour_local=origin_hour_local,
             local_tz=local_tz,
+            train_window_intervals=train_window_intervals,
         )
     return results
 

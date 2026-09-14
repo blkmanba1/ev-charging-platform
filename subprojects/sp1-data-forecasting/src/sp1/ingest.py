@@ -99,6 +99,11 @@ class DatasetSpec:
     def __post_init__(self) -> None:
         if self.kind not in SESSION_KINDS:
             raise ContractError(f"{self.key}: kind must be one of {SESSION_KINDS}, got {self.kind!r}")
+        # Accept plain strings so ad-hoc specs (scripts, notebooks, tests) behave
+        # like specs loaded from YAML.
+        if self.path is not None:
+            self.path = Path(self.path)
+        self.paths = [Path(path) for path in self.paths]
 
 
 def load_dataset_specs(path: str | Path, raw_dir: str | Path | None = None) -> dict[str, DatasetSpec]:
@@ -180,7 +185,12 @@ def read_sessions_csv(spec: DatasetSpec) -> pd.DataFrame:
         if mapping.get("end")
         else None
     )
-    duration_min = _scaled(frame, mapping.get("duration_min"), spec, "duration_min")
+    duration_min = _parse_duration_minutes(
+        _column(frame, mapping["duration_min"], spec)
+        if mapping.get("duration_min")
+        else None,
+        spec,
+    )
     power = _scaled(frame, mapping.get("power_kw"), spec, "power_kw")
     energy = _scaled(frame, mapping.get("energy_kwh"), spec, "energy_kwh")
 
@@ -388,6 +398,48 @@ def _text_column(
     if default_prefix is None:
         return pd.Series([None] * len(frame), dtype="string")
     return pd.Series([f"{default_prefix}-{i:07d}" for i in range(len(frame))], dtype="string")
+
+
+def _parse_duration_minutes(
+    values: pd.Series | None, spec: DatasetSpec
+) -> pd.Series | None:
+    """Parse a duration column into minutes.
+
+    Accepts plain numbers (already minutes) and the ``hh:mm:ss`` / ``h:mm:ss``
+    form that ChargePoint-style exports use. The distinction matters: several
+    datasets publish both *occupancy* and *charging* duration, and spreading a
+    session's energy over occupancy would flatten the load profile badly.
+
+    Parameters
+    ----------
+    values : pandas.Series | None
+        Raw column, or ``None`` when the mapping has no duration entry.
+    spec : DatasetSpec
+        Used for error messages and ``scales``.
+
+    Returns
+    -------
+    pandas.Series | None
+        Minutes as floats, or ``None`` when there is nothing to parse.
+    """
+    if values is None:
+        return None
+    text = values.astype("string").str.strip()
+    numeric = pd.to_numeric(text, errors="coerce")
+    clock = text.str.extract(r"^(?:(?P<h>\d+):)?(?P<m>\d{1,2}):(?P<s>\d{1,2})$")
+    clock_minutes = (
+        pd.to_numeric(clock["h"], errors="coerce").fillna(0) * 60
+        + pd.to_numeric(clock["m"], errors="coerce")
+        + pd.to_numeric(clock["s"], errors="coerce") / 60.0
+    )
+    minutes = numeric.where(numeric.notna(), clock_minutes)
+    unparsed = minutes.isna() & text.notna() & (text != "")
+    if unparsed.any():
+        examples = text[unparsed].head(3).tolist()
+        raise ContractError(
+            f"{spec.key}: could not parse {int(unparsed.sum())} durations, e.g. {examples}"
+        )
+    return minutes * float(spec.scales.get("duration_min", 1.0))
 
 
 def _to_utc(values: pd.Series, timezone: str) -> pd.Series:

@@ -190,6 +190,44 @@ def test_evaluate_models_and_ranking(feature_frame):
     assert "wape" in table.columns and "mae_kwh" in table.columns
 
 
+def test_train_window_caps_the_training_history():
+    """A bounded training window must actually shrink the training set."""
+    from sp1.pipeline import build_feature_frame
+
+    n_intervals = 24 * 60
+    timestamps = pd.date_range("2026-01-01", periods=n_intervals, freq="1h", tz="UTC")
+    values = 10 + 5 * np.sin(2 * np.pi * np.arange(n_intervals) / 24)
+    feature = build_feature_frame(
+        pd.DataFrame({"timestamp": timestamps, "demand_kwh": values}), local_tz="Asia/Shanghai"
+    )
+
+    class Spy:
+        def __init__(self) -> None:
+            self.rows: list[int] = []
+
+        def fit(self, X, y):
+            self.rows.append(len(X))
+            return self
+
+        def predict(self, X):
+            return np.zeros(len(X))
+
+    unbounded, bounded = Spy(), Spy()
+    rolling_backtest(feature, unbounded, horizon=24, step=24, min_train_intervals=72, n_origins=1)
+    rolling_backtest(
+        feature,
+        bounded,
+        horizon=24,
+        step=24,
+        min_train_intervals=72,
+        n_origins=1,
+        train_window_intervals=24 * 7,
+    )
+    assert bounded.rows[-1] < unbounded.rows[-1]
+    # One week of intervals x 24 horizons is the ceiling for the bounded run.
+    assert bounded.rows[-1] <= 24 * 7 * 24
+
+
 def test_add_residual_intervals_brackets_the_prediction():
     predictions = pd.DataFrame(
         {

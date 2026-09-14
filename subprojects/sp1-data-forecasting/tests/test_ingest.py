@@ -205,5 +205,52 @@ def test_multiple_paths_are_read_and_labelled(tmp_path):
     assert sessions["energy_kwh"].sum() == pytest.approx(30.0)
 
 
+def test_paths_given_as_strings_are_coerced(tmp_path):
+    path = _csv(tmp_path, "start,kwh\n2026-09-26T10:00:00Z,10\n")
+    spec = DatasetSpec(
+        key="demo",
+        kind="sessions",
+        path=str(path),
+        paths=[str(path)],
+        column_map={"start": "start", "energy_kwh": "kwh"},
+        default_power_kw=7.0,
+    )
+    assert spec.path == path and spec.paths == [path]
+    assert len(read_sessions_csv(spec)) == 1
+
+
+def test_duration_in_clock_format_is_parsed(tmp_path):
+    """ChargePoint-style exports give durations as hh:mm:ss, not minutes."""
+    path = _csv(
+        tmp_path,
+        "start,energy,hhmmss\n"
+        "2026-09-26T10:00:00Z,10,1:30:00\n"
+        "2026-09-26T12:00:00Z,5,0:45:30\n",
+    )
+    spec = DatasetSpec(
+        key="demo",
+        kind="sessions",
+        path=path,
+        column_map={"start": "start", "energy_kwh": "energy", "duration_min": "hhmmss"},
+    )
+    sessions = read_sessions_csv(spec)
+    first = sessions["end_time_utc"].iloc[0] - sessions["start_time_utc"].iloc[0]
+    second = (sessions["end_time_utc"].iloc[1] - sessions["start_time_utc"].iloc[1]).total_seconds()
+    assert first == pd.Timedelta(hours=1, minutes=30)
+    assert second == pytest.approx(45 * 60 + 30)
+
+
+def test_unparsable_duration_is_reported(tmp_path):
+    path = _csv(tmp_path, "start,energy,hhmmss\n2026-09-26T10:00:00Z,10,about an hour\n")
+    spec = DatasetSpec(
+        key="demo",
+        kind="sessions",
+        path=path,
+        column_map={"start": "start", "energy_kwh": "energy", "duration_min": "hhmmss"},
+    )
+    with pytest.raises(ContractError, match="could not parse"):
+        read_sessions_csv(spec)
+
+
 def test_empty_specs_file_returns_nothing(tmp_path):
     assert load_dataset_specs(tmp_path / "missing.yaml") == {}

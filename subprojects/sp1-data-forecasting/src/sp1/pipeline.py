@@ -235,6 +235,7 @@ def run_pipeline(
         n_origins=n_origins,
         origin_hour_local=0,
         local_tz=settings.local_tz,
+        train_window_intervals=24 * settings.train_window_days if settings.train_window_days else None,
     )
     ranking = ranking_table(results)
     chosen_name = settings.model or str(ranking.index[0])

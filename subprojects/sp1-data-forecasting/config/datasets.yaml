@@ -26,6 +26,36 @@
 
 datasets:
   # ---------------------------------------------------------------------------
+  # City of Boulder (Colorado) Open Data — "Electric Vehicle Charging Station
+  # Data", CC0 1.0 (public domain dedication). Official municipal open data and
+  # one of the three sources the supervisor originally recommended.
+  # https://open-data.bouldercolorado.gov/
+  #
+  # Notes that matter for modelling:
+  #  * `Energy__kWh_` is METERED delivered energy (not a rated power), so this
+  #    dataset does not need the power x duration approximation.
+  #  * `duration_min` is mapped to `Charging_Time__hh_mm_ss_`, NOT to the
+  #    occupancy window: median occupancy is 1.6 h but the tail runs to hundreds
+  #    of hours (cars left plugged in), which would smear the load profile.
+  #  * All columns arrive as strings; the adapter casts them.
+  # ---------------------------------------------------------------------------
+  us-boulder-ev:
+    kind: sessions
+    timezone: America/Denver
+    description: >-
+      City of Boulder Open Data, "Electric Vehicle Charging Station Data" —
+      148,136 charging transactions at 50 city-owned Level 2 stations,
+      2018-01-02 to 2023-12-01, metered energy in kWh, CC0 1.0
+    licence: CC0 1.0 (public domain dedication)
+    url: https://open-data.bouldercolorado.gov/
+    path: boulder-ev/Boulder_EV_Charging_Station_Data.csv
+    column_map:
+      start: Start_Date___Time
+      energy_kwh: Energy__kWh_
+      duration_min: Charging_Time__hh_mm_ss_
+      station_id: Station_Name
+
+  # ---------------------------------------------------------------------------
   # Yu, Q. — "Electric vehicle charging order data" (Beijing / Shanghai /
   # Guangzhou, China), figshare, MIT licence.
   # DOI 10.6084/m9.figshare.28263986.v1 · landing page:
