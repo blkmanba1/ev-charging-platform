@@ -1,0 +1,42 @@
+# Project-wide configuration.
+# Copy to config.local.yaml for machine-specific paths; config.local.yaml is git-ignored.
+
+project:
+  name: "AI-Enabled Smart EV Charging and Energy Management Platform"
+  supervisor: "Dr Amer Ghias"
+  timezone_display: "Asia/Shanghai"   # storage is always UTC
+
+data:
+  raw_dir: "data/raw"
+  interim_dir: "data/interim"
+  processed_dir: "data/processed"
+  resolution: "15min"                 # to be confirmed at kickoff
+  currency: "GBP"                     # to be confirmed at kickoff
+
+# Sub-project 1 — demand forecasting
+sp1:
+  dataset: ""                         # acn-data | boulder | uk-national-grid
+  model: ""                           # linear | random-forest | lstm | xgboost
+  forecast_horizon_hours: 24
+
+# Sub-project 2 — smart charging scheduling
+sp2:
+  strategy: ""                        # tou | optimised
+  algorithm: ""                       # lp | ga | heuristic
+  max_charging_power_kw: 7.0
+  n_evs_scenario: 50                  # the supervisor's headline scenario
+
+# Sub-project 3 — renewable-aware charging
+sp3:
+  solar_dataset: ""                   # pvgis | nrel-nsrdb | solcast
+
+# Sub-project 4 — monitoring & visualisation
+sp4:
+  stack: ""                           # dash | streamlit | react
+  database_url: ""                    # e.g. sqlite:///data/interim/app.db
+  refresh_seconds: 60
+
+# Sub-project 5 — assessment
+sp5:
+  baseline_scenario: "uncontrolled"
+  carbon_intensity_source: "UK National Grid"

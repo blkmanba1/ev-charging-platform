@@ -1,0 +1,86 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# --- Testing / linting ---
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# --- Node / frontend (SP4) ---
+node_modules/
+.next/
+out/
+.vite/
+dist-ssr/
+
+# --- Data: never commit datasets ---
+# Keep data/README.md (and any .gitkeep) so the folder structure survives.
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+*.csv
+*.parquet
+*.h5
+*.feather
+*.sqlite
+*.sqlite3
+*.db
+
+# --- Models / large artefacts ---
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.pt
+models/*.keras
+!models/.gitkeep
+
+# --- Secrets & local config ---
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+
+# --- MATLAB ---
+*.asv
+*.mex*
+
+# --- Editors / OS ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+
+# --- Office temp files ---
+~$*.docx
+~$*.xlsx
+~$*.pptx

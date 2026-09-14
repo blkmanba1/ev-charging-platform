@@ -1,0 +1,34 @@
+# Core data stack
+pandas>=2.0
+numpy>=1.24
+
+# Machine learning (SP1 forecasting, SP5 assessment)
+scikit-learn>=1.3
+xgboost>=2.0
+statsmodels>=0.14
+
+# Visualisation (SP1 analysis, SP4 dashboard)
+matplotlib>=3.7
+plotly>=5.18
+
+# Optimisation (SP2 scheduling)
+pulp>=2.7
+deap>=1.4
+
+# Time series / utilities
+pyyaml>=6.0
+python-dateutil>=2.8
+requests>=2.31
+
+# Notebooks
+jupyter>=1.0
+ipykernel>=6.25
+
+# Testing & linting
+pytest>=7.4
+ruff>=0.1
+
+# --- SP4 only: uncomment if you build the dashboard with Dash/Streamlit ---
+# dash>=2.14
+# streamlit>=1.29
+# sqlalchemy>=2.0
