@@ -35,24 +35,32 @@ Full detail: `docs/integration-contract.md`.
 
 ## 3. Team & ownership
 
-| Sub-project | Owner | Directory |
-|---|---|---|
-| SP1 — Data Analysis & Demand Forecasting | Xu Yuxuan | `subprojects/sp1-data-forecasting/` |
-| SP2 — Smart Charging Scheduling | Xie Letian | `subprojects/sp2-smart-scheduling/` |
-| SP3 — Renewable-Aware Charging Management | **unallocated** | `subprojects/sp3-renewable-aware/` |
-| SP4 — Monitoring & Visualisation Platform | Li Chunren | `subprojects/sp4-monitoring-dashboard/` |
-| SP5 — Economic, Environmental & System Assessment | He Zimo | `subprojects/sp5-system-assessment/` |
+| Sub-project | Owner | Directory | Phase-1 status (2026-09-14) |
+|---|---|---|---|
+| SP1 — Data Analysis & Demand Forecasting | Xu Yuxuan | `subprojects/sp1-data-forecasting/` | **implemented and running on real data** — dataset secured (figshare 28263986, MIT), 72 tests, contract outputs produced |
+| SP2 — Smart Charging Scheduling | Xie Letian | `subprojects/sp2-smart-scheduling/` | not started |
+| SP3 — Renewable-Aware Charging Management | **unallocated** | `subprojects/sp3-renewable-aware/` | not started |
+| SP4 — Monitoring & Visualisation Platform | Li Chunren | `subprojects/sp4-monitoring-dashboard/` | not started |
+| SP5 — Economic, Environmental & System Assessment | He Zimo | `subprojects/sp5-system-assessment/` | not started |
 
 ## 4. Open items
 
 1. **SP3 owner** — the official brief says five students; only four are assigned. Asked of the
    supervisor; awaiting an answer.
-2. **Aggregate vs per-EV forecast** — the only interface question still blocking SP2's optimiser
-   design. Asked of the supervisor in the reply draft.
+2. **Aggregate vs per-EV forecast** — SP1 currently forecasts **aggregate** demand, because the
+   dataset secured for SP1 (figshare 28263986) has no vehicle identifier, so per-EV output is not
+   derivable from it. The question is still worth putting to the supervisor, but SP2 can design
+   its optimiser against an aggregate demand profile today; see the note in
+   `docs/integration-contract.md`.
 3. **Chinese grid carbon intensity source** for SP5's baseline — needs a citable reference.
 4. **Who owns the shared tariff table** (recommendation: SP2).
 5. **Trello board** — created? Card list is ready in `docs/trello-board.md`.
 6. **Reply email** — drafted but not sent. See the workspace's `回复导师邮件草稿.md`.
+7. **SP1 dataset (closed).** Chosen: *Electric vehicle charging order data*, figshare 28263986,
+   **MIT** licence, 1,295,394 sessions from 1,847 stations in Beijing / Shanghai / Guangzhou,
+   2024-01-17 → 2024-02-18. Download is scripted and SHA-256-verified; caveats (the source `power`
+   column is a *rating*, and the published abstract disagrees with the files) are documented in
+   `data/README.md`. `data/raw/dataset-research.md` (git-ignored) holds the full reconnaissance.
 
 ## 5. Where to start implementing
 
@@ -65,13 +73,26 @@ Read in this order:
 
 Then Phase 1 (Months 1–2), per the supervisor's roadmap:
 
-| SP | Phase 1 task |
-|---|---|
-| SP1 | Identify and clean Chinese public EV charging datasets |
-| SP2 | Research Chinese peak-valley time-of-use tariff structures |
-| SP3 | Solar resource data + PV modelling (pending owner) |
-| SP4 | Set up the development environment (Dash/Streamlit or React/Node + SQLite/PostgreSQL) |
-| SP5 | Benchmark Chinese commercial charging costs; establish gCO₂/kWh baseline |
+| SP | Phase 1 task | Status |
+|---|---|---|
+| SP1 | Identify and clean Chinese public EV charging datasets | **done** — see `subprojects/sp1-data-forecasting/README.md` |
+| SP2 | Research Chinese peak-valley time-of-use tariff structures | to do |
+| SP3 | Solar resource data + PV modelling (pending owner) | to do |
+| SP4 | Set up the development environment (Dash/Streamlit or React/Node + SQLite/PostgreSQL) | to do |
+| SP5 | Benchmark Chinese commercial charging costs; establish gCO₂/kWh baseline | to do |
+
+SP1's outputs are already contract-compliant, so **SP2 and SP4 can develop against real files
+today** rather than mock data:
+
+```bash
+python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset cn-charging-orders
+python subprojects/sp1-data-forecasting/scripts/run_sp1.py --dataset cn-charging-orders
+# -> data/processed/sp1-demand-forecast-v1.csv      (+ .meta.json)
+# -> data/processed/sp1-baseline-demand-v1.csv      (+ .meta.json)  "everyone plugs in at 18:00"
+```
+
+The uncontrolled baseline shows an **11.6× peak increase** over the forecast peak on the same
+window — that is the number SP2's scheduler exists to reduce.
 
 ## 6. Things easily forgotten
 

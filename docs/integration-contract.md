@@ -146,7 +146,10 @@ Optional time series alongside it: `data/processed/sp5-savings-timeline-v1.csv` 
 
 ## Cross-cutting: the meta file
 
-Every output file above is accompanied by `<same-name>.meta.json`:
+Every output file above is accompanied by `<same-name>.meta.json` — i.e. the `.csv` suffix is
+replaced, so `data/processed/sp1-demand-forecast-v1.csv` pairs with
+`data/processed/sp1-demand-forecast-v1.meta.json`. (SP1 implements exactly this; if SP4 expected
+`sp1-demand-forecast-v1.csv.meta.json`, say so and this line becomes the decision.) Fields:
 
 ```json
 {
@@ -186,6 +189,10 @@ Every output file above is accompanied by `<same-name>.meta.json`:
 
 - [ ] Does SP1 forecast **aggregate** demand, or **per-EV**? Affects whether SP2 schedules
       fleets or individuals. **Blocks SP2's optimiser design — settle first.**
+      *Status 2026-09-14:* SP1 delivers **aggregate** demand. The dataset SP1 secured
+      (`data/README.md`) has no vehicle identifier, so per-EV output is not derivable from it;
+      the file format above is unchanged either way, and SP2 can build against the aggregate
+      profile now. Still worth confirming with the supervisor that aggregate is acceptable.
 - [ ] Who owns the **shared tariff table** — SP2 or SP5? (Recommendation: SP2, since SP2 is the
       only consumer that needs it at run time; SP5 reads it read-only.)
 - [ ] Which **Chinese grid carbon intensity** source do we cite for SP5's baseline? A published
