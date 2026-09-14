@@ -1,0 +1,28 @@
+# Normalise line endings across Windows / macOS / Linux teammates.
+# Files are stored with LF in the repository regardless of the local OS.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary — never touch
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.xlsx binary
+*.docx binary
+*.pptx binary
+*.zip binary
+
+# Keep diffs readable
+*.md text
+*.py text
+*.ipynb text
+*.yaml text
+*.yml text
+*.json text
+*.csv text
