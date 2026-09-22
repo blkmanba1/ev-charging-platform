@@ -1,0 +1,257 @@
+% ============================================================================
+%  Literature review — AI-Enabled Smart EV Charging and Energy Management
+%  Build:  xelatex -> bibtex -> xelatex -> xelatex
+% ============================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[UTF8]{ctex}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Consolas}
+
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\usepackage{parskip}
+\usepackage[htt]{hyphenat}
+\setlength{\emergencystretch}{2.5em}
+
+\captionsetup{font=small,labelfont=bf}
+\setlist[itemize]{leftmargin=1.4em,topsep=2pt,itemsep=2pt}
+\setlist[enumerate]{leftmargin=1.6em,topsep=2pt,itemsep=2pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small FYP — Smart EV Charging Platform}
+\fancyhead[R]{\small Literature Review}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Literature Review}\\[6pt]
+  {\large AI-Enabled Smart Electric Vehicle Charging\\[2pt]
+   and Energy Management Platform}\\[8pt]
+  {\normalsize Sub-Project 1 companion document}
+\end{center}
+
+% ============================================================================
+\section{Scope and selection criteria}
+
+This review covers the five strands the project depends on: machine-learning forecasting of EV
+charging demand; the conversion of per-session charging records into hourly load profiles; smart
+charging against time-of-use tariffs; open charging datasets; and the measured grid impact of
+charging behaviour. It is a working review for a systems-engineering project, so each strand closes
+with what it changes in the design rather than with a summary of the field.
+
+Every cited work was accepted only after its DOI resolved through Crossref with matching title,
+authors, year and venue. Where a publisher blocks automated access, the abstract was taken from the
+Crossref or OpenAlex deposit record rather than from a search result. Works whose abstracts could not
+be obtained, and one DOI that does not exist, are listed in Section~\ref{sec:gaps}. Datasets
+distributed without a DOI are cited through the peer-reviewed paper that introduces them.
+
+% ============================================================================
+\section{Forecasting EV charging demand}\label{sec:forecast}
+
+The strand divides into model-family comparisons and one systematised review.
+
+\paragraph{Model families.} Zhu et al.~\cite{Zhu2019ShortTermEVLoadDL} compare four deep
+architectures for station-level hourly load and report a gated recurrent unit network as the best
+performer on hourly historical data; their framing is that driver behaviour is stochastic while the
+fleet's power draw is large, which is the combination that makes the problem hard.
+Vishnu et al.~\cite{Vishnu2023ShortTermEVLoadTSMLDL} compare an auto-regressive model, support vector
+regression and an LSTM on Adaptive Charging Network data and report the LSTM as best, with
+MAE 4\,kW and RMSE 5.9\,kW --- the most concrete published error figure found in this strand, and
+the only one trained on the same data family the project uses as a comparison point.
+Zhang et al.~\cite{Zhang2022MCCNNTCN} combine a multi-channel CNN with a temporal convolutional
+network and splice in meteorological and calendar covariates, reporting improvements over ANN of
+14.09\,\%, LSTM 25.13\,\%, CNN-LSTM 27.32\,\% and TCN 4.48\,\% on urban charging-station load from a
+Chinese city. Ge et al.~\cite{Ge2020SpatialTemporalEVLoadProfile} take a different route: an improved
+random forest with harmony-search hyperparameter tuning, followed by a bottom-up construction of the
+spatial-temporal load of EV clusters.
+
+\paragraph{Method taxonomy.} Alaraj et al.~\cite{Alaraj2025MLChargingDemandReview} survey machine-learning
+demand forecasting and argue the now-standard position: unmanaged mass adoption risks network
+instability, smart charging can mitigate it, but only given an accurate forecast. That ordering ---
+forecast first, schedule second --- is the architecture this project implements.
+
+\paragraph{What this strand settles.} Hourly resolution is the resolution the literature reports at,
+and calendar covariates are established as useful rather than novel. It also supplies the reference
+error figures against which the project's own accuracy can be discussed, with the caveat that
+absolute errors are not comparable across datasets of different scale.
+
+% ============================================================================
+\section{From session records to hourly load profiles}\label{sec:profiles}
+
+This strand carries the project's central data-engineering assumption: that a table of sessions ---
+each with a connection time, a disconnection time and an energy quantity --- can be converted into an
+hourly power profile.
+
+Yi and Scoffield~\cite{Yi2018ResidentialLoadProfileGeneration} build a charging-decision model from
+historical residential sessions and estimate the distribution of charging duration \emph{conditional
+on parking duration} using kernel density estimation, then generate synthetic charging behaviour that
+preserves the parking-to-travel dependency. Uimonen and Lehtonen~\cite{Uimonen2020OfficeBuildingOccupancy}
+derive office-building charging profiles from measured \emph{charger occupancy} and use them to ask how
+many chargers a building needs --- the closest published analogue to this project's workplace,
+midday-peaking site. Munkhammar et al.~\cite{Munkhammar2014BernoulliPEVCharging} condense a Monte Carlo
+state-of-charge simulation into hour-by-hour Bernoulli distributions of plug-in status and show that
+the aggregate across many vehicles is approximately normal, which is the formal basis for turning
+per-vehicle plug-in indicators into a fleet profile. Lahariya et al.~\cite{Lahariya2020SyntheticDataGenerator}
+model arrivals as a Poisson-like process with connection time made dependent on arrival time through a
+Gaussian mixture, and report generated sessions that are statistically indistinguishable from the real
+data they were trained on.
+
+von Hoffen~\cite{vonHoffen2016ChargingTransactionAnalytics} makes the complementary point that
+transaction records are not self-sufficient: they acquire their analytical value only after enrichment
+with background and environmental context.
+
+\paragraph{What this strand settles.} Charging duration should be modelled as a function of occupancy
+rather than as a constant rate, which is the assumption this project implements by spreading a
+session's metered energy across its \emph{charging} window rather than across a fixed power. It also
+establishes that the profile shape for a workplace site is properly derived from occupancy data, and
+that enrichment with calendar (and, where available, weather) context is a documented requirement
+rather than an optional refinement.
+
+% ============================================================================
+\section{Smart charging, tariffs and peak reduction}\label{sec:scheduling}
+
+Chen et al.~\cite{Chen2012ValleyFilling} formulate joint optimal power flow and EV charging for a
+fleet with heterogeneous charging-rate limits and characterise the optimal offline schedule as a
+\emph{valley-filling} profile, then give both a cheaper centralised algorithm and a decentralised
+online algorithm that tracks that profile. This is the theoretical benchmark against which a
+scheduling heuristic can be judged approximately optimal. Ramadan et
+al.~\cite{Ramadan2018PeakShavingValleyFilling} solve the related peak-shaving and valley-filling problem
+with particle swarm optimisation, allowing vehicle-to-grid discharge during peaks.
+
+On the tariff side, Davis and Bradley~\cite{Davis2012TOURatesEfficacy} test whether time-of-use rates
+actually shift charging and find a qualification worth carrying into any scheduling claim: for
+plug-in hybrids, the additional fuelling cost incurred by charging off-peak can reduce or cancel the
+economic incentive the tariff is meant to provide. Tariff response is therefore not free, and a
+cost-saving result that assumes it is free overstates the benefit.
+
+Two studies quantify what managed charging is worth at scale. Szinai et
+al.~\cite{Szinai2020ReducedGridOperatingCosts} link mobility and grid-dispatch models for California
+and report that 0.95--5 million managed vehicles avoid USD 120--690 million in annual grid
+operating costs (up to 10\,\%) and cut renewable curtailment by up to 40\,\% --- but also that
+overnight time-of-use charging \emph{increases} curtailment while achieving similar cost savings.
+Dixon et al.~\cite{Dixon2020MinimiseEmissionsWindCurtailment} schedule charging against grid carbon
+intensity and wind availability, reducing average charging emissions from 35--56 to
+28--40\,gCO\textsubscript{2}/km, and estimate that 500{,}000 vehicles could absorb about three
+quarters of the curtailment at Scotland's largest onshore wind farm.
+
+\paragraph{What this strand settles.} Valley-filling is the right target shape for a scheduler, and
+cost and curtailment are separately measurable objectives that can move in opposite directions. The
+project's renewable-alignment objective therefore needs to state which of the two it optimises.
+
+% ============================================================================
+\section{Open datasets}\label{sec:datasets}
+
+Amara-Ouali et al.~\cite{AmaraOuali2021EVLoadOpenDataReview} survey open data for reproducible EV
+charging-load research and report a search across more than 860 repositories yielding roughly
+60 datasets, motivating the survey with the observation that the field commonly lacks
+charging-station data of realistic consistency. That finding frames this project's dataset choice:
+two municipal session-level releases were selected from that landscape on the criteria of official
+provenance, a public-domain licence, metered energy per session, and undisputed download.
+
+Li et al.~\cite{Li2025UrbanEV} publish UrbanEV, an open benchmark covering charging space
+availability and electricity consumption in Shenzhen at hourly resolution over six months for more
+than 20{,}000 stations, including occupancy, duration, volume and price, with weather and spatial
+covariates --- the closest existing precedent for the hourly profile work this project performs.
+Lee et al.~\cite{Lee2021ACNSim} present ACN-Sim, whose contribution here is double: it is the
+DOI-bearing citation for the Adaptive Charging Network dataset, which has no archived DOI of its own,
+and it demonstrates how a session dataset becomes an evaluable charging scenario.
+Sadeghianpourhamami et al.~\cite{Sadeghianpourhamami2018EVFlexibility} analyse EV flexibility from
+measured charging data; its metadata verified, but no abstract could be obtained, so no substantive
+claim is attributed to it here.
+
+% ============================================================================
+\section{Charging behaviour and grid impact}\label{sec:impact}
+
+Powell et al.~\cite{Powell2022ChargingInfrastructureGridImpacts} model charging demand across the
+United States Western Interconnection and evaluate it against a 2035 economic dispatch. Peak net
+electricity demand rises by up to 25\,\% under forecast adoption and by 50\,\% in a
+full-electrification stress test. Two of their findings bear directly on this project. First,
+locally optimised charging combined with a high share of home charging can \emph{strain} the grid
+rather than relieve it. Second, shifting to \emph{uncontrolled daytime} charging reduces storage
+requirements, excess non-fossil generation, ramping and emissions. The project's observed profile
+already peaks at midday, which is favourable under that finding, but a scheduler that instead
+maximises overnight load --- the framing inherited from the project brief --- moves in the opposite
+direction. This tension is a finding to be examined, not a detail to be smoothed over.
+Verma et al.~\cite{Verma2021ReviewImpactsDistributionNetwork} review distribution-network impacts
+across penetration levels, supporting the project's treatment of impact as a function of how many
+vehicles charge rather than as a fixed property of EVs.
+
+% ============================================================================
+\section{Implications for the project}\label{sec:implications}
+
+\begin{enumerate}
+  \item \textbf{Resolution and evaluation design.} One-hour resolution matches the published
+        forecasting work, and a rolling-origin out-of-sample protocol with explicit baseline models
+        is the minimum needed for the reported accuracy to mean anything. Published error figures
+        (\cite{Vishnu2023ShortTermEVLoadTSMLDL}: MAE 4\,kW) come from other datasets and larger sites,
+        so they are context, not a target.
+  \item \textbf{The session-to-hourly derivation.} Spreading metered energy across a session's
+        charging window follows the occupancy-conditional modelling of
+        \cite{Yi2018ResidentialLoadProfileGeneration} and \cite{Uimonen2020OfficeBuildingOccupancy}.
+        The residual weakness --- no within-session power taper --- is a limitation of the source
+        data, and it is stated in the pipeline's output metadata.
+  \item \textbf{Enrichment.} \cite{vonHoffen2016ChargingTransactionAnalytics} and
+        \cite{Zhang2022MCCNNTCN} both indicate that calendar and weather context raise forecast
+        quality. The pipeline already carries calendar covariates; adding weather needs an external
+        source and remains open.
+  \item \textbf{Baselines.} The reviewed forecasting papers compare model families against each
+        other. This project additionally scores three naive baselines in the same table, because a
+        learned model that does not beat persistence has not demonstrated value regardless of its
+        $R^2$.
+  \item \textbf{Scheduling objective.} Valley filling is the characterisation of the optimal
+        schedule \cite{Chen2012ValleyFilling}; cost and curtailment are distinct objectives
+        \cite{Szinai2020ReducedGridOperatingCosts}; and carbon-intensity-aware scheduling has
+        published magnitudes \cite{Dixon2020MinimiseEmissionsWindCurtailment}. The project must
+        state which objective it optimises and report the other two as secondary.
+  \item \textbf{The daytime-charging tension.} \cite{Powell2022ChargingInfrastructureGridImpacts}
+        argues that daytime charging reduces system cost while local optimisation with high home
+        charging can strain the grid. Since both of this project's sites already peak at midday,
+        the scheduling chapter should test valley filling \emph{and} midday alignment rather than
+        assuming the brief's overnight framing.
+  \item \textbf{Granularity of the forecast.} The Bernoulli-disaggregation and joint
+        arrival-departure models \cite{Munkhammar2014BernoulliPEVCharging,Lahariya2020SyntheticDataGenerator}
+        both presume per-vehicle records. One of this project's two sites carries a vehicle
+        identifier and the other does not, which is why the aggregate-versus-per-EV question is a
+        scope decision rather than a data limitation.
+\end{enumerate}
+
+% ============================================================================
+\section{Works excluded and gaps}\label{sec:gaps}
+
+Three candidate references were dropped because no abstract could be obtained from any deposit
+record, which would have left their contribution unverifiable:
+\code{10.1016/j.apenergy.2024.125174}, \code{10.1038/s41560-018-0136-x} and
+\code{10.1016/j.rser.2023.113873}. One DOI found during the search does not resolve at all
+(\code{10.1109/isgt.2019.8791267}, HTTP 404 at both Crossref and the resolver) and is recorded here so
+that it is not reused in good faith. A further DOI resolves to a liquid-fuel demand study rather than
+an EV study and was rejected on content.
+
+Four datasets are cited through their introducing papers because they carry no DOI of their own: the
+Adaptive Charging Network release \cite{Lee2021ACNSim}, UrbanEV \cite{Li2025UrbanEV}, and the two
+municipal releases used in this project, which are documented in the repository's data register.
+
+Outside the scope of this review: power-system optimisation beyond the charging interface, battery
+degradation, and vehicle-to-grid economics, all of which matter to the wider platform but not to the
+forecasting and disaggregation work reviewed here.
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+\end{document}
