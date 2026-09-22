@@ -222,13 +222,15 @@ def main() -> int:
     results, numbers = {}, {}
     for key in DATASETS:
         tex, nums = results_table(key, interim)
-        (out_dir / f"results-{key}.tex").write_text(tex, encoding="utf-8")
+        # newline="\n" so the generated files are LF-only on every platform (a bare
+        # write_text would translate to CRLF on Windows and churn the diff).
+        (out_dir / f"results-{key}.tex").write_text(tex, encoding="utf-8", newline="\n")
         results[key] = tex
         numbers[key] = nums
         print(f"  wrote results-{key}.tex  (best {nums['best_model']}, WAPE {nums['best_wape']:.4f})")
 
     baseline_tex, baseline = baseline_table(interim, processed)
-    (out_dir / "baseline.tex").write_text(baseline_tex, encoding="utf-8")
+    (out_dir / "baseline.tex").write_text(baseline_tex, encoding="utf-8", newline="\n")
     print(f"  wrote baseline.tex        (peak amplification {baseline['amplification']:.2f}x)")
 
     for key in DATASETS:
@@ -240,7 +242,9 @@ def main() -> int:
         )
 
     (out_dir / "keynumbers.tex").write_text(
-        macro_block(numbers["boulder"], numbers["palo-alto"], baseline), encoding="utf-8"
+        macro_block(numbers["boulder"], numbers["palo-alto"], baseline),
+        encoding="utf-8",
+        newline="\n",
     )
     print("  wrote keynumbers.tex")
     return 0
