@@ -15,9 +15,9 @@ file alone. Written at the end of the planning/analysis stage.
 | Task board | Trello, card list in `docs/trello-board.md` | team |
 | Team comms | **QQ group, students only** | team |
 | Comms with supervisor | Teams meetings + email | team |
-| Datasets | **Chinese data — approved by Dr Ghias** | supervisor |
+| Datasets | **Official US municipal open data** — City of Boulder (primary) + City of Palo Alto (validation); the supervisor accepts either Chinese or US data | team + supervisor |
 | Time resolution | **1 hour** | team |
-| Currency | **CNY (¥)** | team |
+| Currency | **CNY (¥)** — *superseded, see contract amendment A1; no tariff data exists in either dataset* | team |
 | Storage timezone | **UTC** (display handled by SP4) | team |
 | Scenario hand-off | **CSV** | team |
 

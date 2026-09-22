@@ -53,10 +53,11 @@ recommended is Chinese, and no *official* Chinese source publishes session-level
 (a member-account review of the China Charging Alliance platform found monthly aggregates only —
 see the register above). So "official data" and "China-only data" are, today, mutually exclusive.
 
-**Resolved 2026-09-14 (team):** SP1 uses the official **US municipal** sources. The knock-on changes
-are recorded in `docs/integration-contract.md`: the region lock moves off China, and the currency
-lock needs a decision (Boulder/Palo Alto publish **no tariff data at all**, so SP2 must source a
-US tariff schedule — that is now an open item rather than a Chinese one).
+**Resolved 2026-09-14 (team), region confirmed by the supervisor:** the supervisor accepts either
+Chinese or US data, so SP1 runs on the official **US municipal** sources. The knock-on changes are
+recorded in `docs/integration-contract.md` amendment A1: the region lock moves off China, and the
+currency lock still needs a decision (Boulder/Palo Alto publish **no tariff data at all**, so SP2
+must source a US tariff schedule — that is now an open item rather than a Chinese one).
 
 ### Dataset notes — City of Boulder EV charging data (SP1, official source)
 

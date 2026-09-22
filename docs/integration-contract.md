@@ -15,12 +15,14 @@
 
 ### Amendments after kickoff
 
-**A1 — 2026-09-14 · Region and currency (raised by SP1; needs SP2/SP4/SP5 sign-off).**
+**A1 — 2026-09-14 · Region and currency.** Status: the region change is **confirmed acceptable by
+the supervisor** (he accepts either Chinese or US data), so this is no longer an open approval item;
+the currency/tariff knock-on below still needs SP2 and SP5 to acknowledge it.
 SP1 reviewed the three sources the supervisor recommended and searched for official Chinese
 equivalents. Finding: **no official Chinese source publishes session-level charging data**, while
 two supervisor-recommended sources (City of Boulder, City of Palo Alto) are official municipal open
-data (CC0 / PDDL) with metered kWh per session. The team therefore chose to run SP1 on the official
-non-Chinese datasets, which invalidates two locks above:
+data (CC0 / PDDL) with metered kWh per session. The team therefore runs SP1 on those official
+datasets, which invalidates two locks above:
 
 - **Region:** no longer China-only. SP1's demand series and the uncontrolled baseline are for
   **Boulder and Palo Alto (USA)**. The file formats in this document are unchanged.
