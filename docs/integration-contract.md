@@ -30,10 +30,10 @@ datasets, which invalidates two locks above:
   all**. SP2 must source a tariff schedule for the chosen region (US utility rates) before it can
   populate `tariff_cny_per_kwh`/`interval_cost_cny`. **Owner SP2**; the source survey is complete and
   written up in `docs/tariff-sources.md` (verified artefacts in `data/raw/tariff/`, ToU period
-  mapping from OpenEI URDB, all-in prices from Xcel's own rate summaries). One sub-decision is still
-  open: Palo Alto 2011–2020 has no ToU tariff available, so it is either priced on its tiered
-  residential schedule, declared out of ToU scope, or resolved by enumerating the City's records
-  portal.
+  mapping from OpenEI URDB, all-in prices from Xcel's own rate summaries). One sub-decision was
+  settled on 2026-09-22: **Palo Alto is priced on its tiered residential E-1 schedule and is declared
+  out of ToU scope**, so the peak-shifting demonstration runs on Boulder and SP5 must report the two
+  sites separately rather than pooling them.
 - **Column names are deliberately not renamed yet.** `tariff_cny_per_kwh` and `interval_cost_cny`
   keep their names so nothing downstream breaks; if the team locks USD, that is a *minor* schema
   bump and a rename in the same PR.

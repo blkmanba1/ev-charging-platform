@@ -58,9 +58,9 @@ Full detail: `docs/integration-contract.md`.
    Alto data contain no tariff column. The source survey is now done and written up in
    `docs/tariff-sources.md`, with the verified artefacts in `data/raw/tariff/`: for Boulder 2018–2023
    use OpenEI URDB (bulk CSV, no key) for the ToU period mapping and Xcel's own rate-summary PDFs for
-   all-in $/kWh. **Still open:** Palo Alto 2011–2020 has no ToU tariff in URDB (frozen at 2013) and
-   its residential E-1 was tiered, so the team must choose between costing it on tiers, declaring it
-   out of ToU scope, or enumerating the City's records portal. See contract amendment **A1**.
+   all-in $/kWh. **Decided 2026-09-22:** Palo Alto is priced on its tiered residential E-1 schedule and
+   declared out of ToU scope, so the peak-shifting demonstration runs on Boulder and SP5 reports the
+   two sites separately. See contract amendment **A1**.
 5. **Trello board** — created? Card list is ready in `docs/trello-board.md`.
 6. **Reply email** — drafted but not sent. See the workspace's `回复导师邮件草稿.md`.
 7. **SP1 dataset (closed 2026-09-14).** Chosen: **City of Boulder** (official municipal open data,

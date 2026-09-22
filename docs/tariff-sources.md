@@ -89,13 +89,12 @@ Historical stamped tariff sheets are reachable without an account at the City's 
 (`https://recordsportal.paloalto.gov/WebLink/ElectronicFile.aspx?docid=6666&dbid=0&repo=PaloAlto`,
 10,411,283 bytes, effective 2020-07-01), but only that one packet has been checked.
 
-Three options, for the team to choose:
-
-1. cost Palo Alto charging on the **tiered E-1** schedule and state that ToU optimisation does not
-   apply there;
-2. declare Palo Alto **out of ToU scope** and use it only as the forecast-validation site it already
-   is;
-3. enumerate the records-portal packets to establish when residential E-1-TOU began.
+**Decision (team, 2026-09-22): cost Palo Alto charging on the tiered residential E-1 schedule and
+state explicitly that time-of-use optimisation does not apply to it.** Palo Alto therefore keeps its
+role as the forecast-validation site, and the ToU / peak-shifting demonstration runs on Boulder,
+where a genuine ToU tariff exists for the whole 2018–2023 window. SP5's economic comparison must
+report the two sites separately rather than pooling them, because one is priced on tiers and the
+other on time-of-use periods.
 
 ## Licensing
 
