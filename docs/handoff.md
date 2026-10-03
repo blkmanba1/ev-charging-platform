@@ -3,7 +3,13 @@
 **Purpose:** a fresh session (or a teammate) should be able to pick this project up from this
 file alone. Written at the end of the planning/analysis stage.
 
-**Last updated:** 2026-09-14
+**Last updated:** 2026-10-02
+
+> **Scope correction (2026-10-02).** This file was written on 2026-09-14 and still carried the
+> original China-only wording in several places. The project moved to the official US municipal
+> datasets on 2026-09-14 (contract amendment **A1**), and every region statement below has now been
+> brought in line with it. Where a line still says "China", it is history or a closed route, not a
+> requirement.
 
 ---
 
@@ -25,7 +31,10 @@ Full detail: `docs/integration-contract.md`.
 
 ## 2. Meeting logistics
 
-- Next meeting: **Saturday 2026-09-26, 14:00 China time (UTC+8) = 07:00 UK**
+- Next meeting: **Saturday 2026-10-03, 13:00 China time (UTC+8) = 06:00 UK** — announced by the
+  supervisor **verbally**; the recurring invitation still shows Saturday 14:00 and has **not** been
+  updated, so confirm before relying on it (see the workspace's
+  `回复导师-会议改期确认-10-03.md`)
 - Recurring: **every two weeks on Saturday** through 2027-06-13
 - Platform: Microsoft Teams (link and passcode are in the calendar invitation — deliberately
   **not** stored in this public repo)
@@ -84,24 +93,26 @@ Then Phase 1 (Months 1–2), per the supervisor's roadmap:
 
 | SP | Phase 1 task | Status |
 |---|---|---|
-| SP1 | Identify and clean Chinese public EV charging datasets | **done** — see `subprojects/sp1-data-forecasting/README.md` |
-| SP2 | Research Chinese peak-valley time-of-use tariff structures | to do |
+| SP1 | Identify and clean official municipal EV charging datasets | **done** — Boulder (primary) + Palo Alto (validation); see `subprojects/sp1-data-forecasting/README.md` |
+| SP2 | Research ToU / peak-valley tariff structures for the sites in use | **source survey done** — `docs/tariff-sources.md`, tracking issue #2 |
 | SP3 | Solar resource data + PV modelling (pending owner) | to do |
 | SP4 | Set up the development environment (Dash/Streamlit or React/Node + SQLite/PostgreSQL) | to do |
-| SP5 | Benchmark Chinese commercial charging costs; establish gCO₂/kWh baseline | to do |
+| SP5 | Benchmark commercial charging costs; establish gCO₂/kWh baseline | to do — carbon source undecided (the GB API listed in `data/README.md` does not match the sites) |
 
 SP1's outputs are already contract-compliant, so **SP2 and SP4 can develop against real files
 today** rather than mock data:
 
 ```bash
-python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset cn-charging-orders
-python subprojects/sp1-data-forecasting/scripts/run_sp1.py --dataset cn-charging-orders
+python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset us-boulder-ev
+python subprojects/sp1-data-forecasting/scripts/run_sp1.py --dataset us-boulder-ev
 # -> data/processed/sp1-demand-forecast-v1.csv      (+ .meta.json)
 # -> data/processed/sp1-baseline-demand-v1.csv      (+ .meta.json)  "everyone plugs in at 18:00"
 ```
 
-The uncontrolled baseline shows an **11.6× peak increase** over the forecast peak on the same
-window — that is the number SP2's scheduler exists to reduce.
+The uncontrolled baseline shows a **3.8× peak increase** over the forecast peak on the same window
+(94.5 kWh → 362.5 kWh, energy conserved to 0.05%) — that is the number SP2's scheduler exists to
+reduce. *(The 11.6× quoted here earlier came from the retired Chinese third-party dataset and no
+longer describes any dataset in use.)*
 
 ## 6. Things easily forgotten
 
@@ -109,15 +120,19 @@ window — that is the number SP2's scheduler exists to reduce.
   dataset in `data/README.md` in the same PR.
 - **The repo is public.** No datasets, credentials, or meeting links in commits.
 - **A decision made in QQ does not exist until it is in the repository.**
-- `data/README.md` contains the researched candidate list of **Chinese** data sources
-  (charging sessions, peak-valley tariffs, solar, grid carbon intensity). Start there rather
-  than searching from scratch.
-- **Known honest difficulty:** China publishes much less open session-level EV charging data
-  than the US or EU. The best public options are research datasets on Science Data Bank
-  (scidb.cn). A calibrated synthetic profile built from published Chinese aggregates is the
-  documented fallback — it must be labelled as synthetic.
-- **China's peak-valley ToU tariff (峰谷分时电价)** is a genuine Chinese policy instrument and
-  the natural mechanism for SP2's scheduler. This is a strength of the project, not a workaround.
+- `data/README.md` holds the **current** dataset register at the top (Boulder primary, Palo Alto
+  validation). The Chinese candidate lists below it are a **reconnaissance record**: they were
+  checked, and they cannot carry SP1 because no official Chinese source publishes session-level
+  data. Start there rather than searching from scratch, but do not read that section as a
+  requirement.
+- **Known honest difficulty (China route — closed):** China publishes far less open session-level EV
+  charging data than the US or EU; the best public options are research datasets on Science Data
+  Bank (scidb.cn). A calibrated synthetic profile built from published Chinese aggregates was the
+  documented fallback, and it would have had to be labelled synthetic. This is why SP1 runs on the
+  official US municipal sources under A1.
+- **Peak-valley ToU pricing is the mechanism** for SP2's scheduler, and it is not China-exclusive:
+  the US utility schedules surveyed in `docs/tariff-sources.md` carry the same structure, and
+  Boulder's is the one used for the peak-shifting demonstration.
 
 ## 7. Source material (workspace, not in the repo)
 

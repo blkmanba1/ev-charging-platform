@@ -10,9 +10,10 @@
 - Analyse the impact of renewable integration on charging performance and energy consumption.
 
 ## Candidate datasets
-**China-specific** — see `data/README.md`. ERA5 reanalysis and NASA POWER are the pragmatic
-choice (free, hourly, no registration, defensible in a dissertation); CMA / data.cma.cn provide
-measured observations where available.
+**Region: matches SP1's sites — see contract amendment A1.** The kickoff China lock is retired, so
+the "China-specific" wording that used to be here no longer applies. ERA5 reanalysis and NASA POWER
+are the pragmatic choice (free, hourly, no registration, defensible in a dissertation) and cover the
+sites in use; CMA / data.cma.cn would only apply if the region returned to China.
 
 ## Status
 The official brief lists **five** students; the project email lists four. This sub-project is

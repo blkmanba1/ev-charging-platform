@@ -15,8 +15,11 @@ data/
 1. **`raw/` is read-only.** Never overwrite. If a file is wrong, re-download it.
 2. **`processed/` obeys `docs/integration-contract.md`** — 1-hour resolution, UTC, CNY.
 3. Every dataset you bring in gets a row in the register below **in the same PR**.
-4. **All datasets must be China-specific** (locked at kickoff — the project targets the
-   Chinese market, so tariffs, carbon intensity, and charging behaviour must all be Chinese).
+4. **Region: USA.** The kickoff lock ("all datasets must be China-specific") was **retired on
+   2026-09-14** by contract amendment **A1**: no official Chinese source publishes session-level
+   charging data, so SP1 runs on the official US municipal sources. Anything brought in must match
+   the region of SP1's demand series (Boulder / Palo Alto). The Chinese candidate lists further
+   down this file are a **reconnaissance record, not a requirement**.
 
 ## Dataset register
 
@@ -44,7 +47,7 @@ Full reconnaissance with verification logs: `data/raw/official-datasets-research
 | **Caltech ACN-Data** | ✅ Caltech + PowerFlex | ✅ session-level **plus measured power time series**, per-user IDs, 3 site types | API returns **HTTP 401** without a token; token comes from a free self-service registration (`ev.caltech.edu/register`, "educational and research purposes" only) | Obtainable after a ~2-minute registration by a team member. Strongest data of the set; no redistribution granted, so it stays git-ignored like every dataset |
 | **City of Palo Alto EV Charging Station Usage** | ✅ City of Palo Alto (US municipal government) | ✅ session-level, metered kWh, **has `User ID`** | Direct CSV download, **no registration** — 85,445,823 bytes (259,415 rows, 2011–2020) already fetched | Strong alternative; the only open source here that supports **per-EV** forecasting. Licence: PDDL (public domain) |
 | **UK National Grid / NESO** | ✅ National Energy System Operator (renamed from National Grid ESO in 2024) | ❌ **none** — GB national system demand, half-hourly | CKAN API + yearly CSVs, no registration (2001–2025) | **Not an EV dataset.** Use as grid context: peak/valley windows, load headroom for SP2 |
-| **NESO Carbon Intensity API** | ✅ NESO | ❌ (gCO₂/kWh, 30-min, national + 14 GB regions) | Public API, keyless, CC BY 4.0 | Use for SP5's carbon baseline — this closes the "which carbon intensity source" open item |
+| **NESO Carbon Intensity API** | ✅ NESO | ❌ (gCO₂/kWh, 30-min, national + 14 GB regions) | Public API, keyless, CC BY 4.0 | **Does not match the sites in use** — it publishes **GB** factors, while SP1's demand series is US (A1). The "which carbon intensity source" item is therefore **still open**: a US regional factor is needed. Kept here only as an option if the region changes back |
 | **ElaadNL Open Data** (Netherlands) | ✅ ElaadNL knowledge centre | ⚠️ aggregated/normalised charging profiles (public/workplace/private); raw session sets published historically | Open data platform | Viable alternative if EU context is preferred |
 | **Elexon** (UK settlement data) | ✅ Elexon | ❌ | **Unreachable from this network** — HTTP 403 from an Azure gateway on every endpoint tried | Unverified; retry from another network before citing |
 
@@ -144,12 +147,14 @@ Recorded so the search does not have to be repeated — see
 
 ---
 
-## Candidate datasets — China-specific
+## Candidate sources — Chinese (reconnaissance record, **not the active scope**)
 
-> **Scope decision (supervisor-approved):** the kickoff email suggested ACN-Data (Caltech),
-> Boulder Colorado, and UK National Grid data. Those are **superseded** — we use Chinese data,
-> and **Dr Ghias has confirmed this is acceptable**. The original suggestions are recorded here
-> only so the rationale stays documented if the question comes up again.
+> **Superseded 2026-09-14 by contract amendment A1.** The original kickoff scope was China-only, and
+> the supervisor confirmed Chinese data would be acceptable; the team then found that **no official
+> Chinese source publishes session-level charging data**, so SP1 moved to the official US municipal
+> datasets in the register above. This section is kept **only so the search does not have to be
+> repeated** and the rationale stays on the record. Nothing below is a current requirement — read it
+> as "what we checked, and why it could not carry SP1", not as "what SP1 uses".
 
 ### EV charging demand (SP1)
 

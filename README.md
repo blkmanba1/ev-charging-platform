@@ -3,7 +3,9 @@
 > **Final Year Project** — University of Glasgow (Glasgow College UESTC)
 > **Supervisor:** Dr Amer Ghias
 > **Duration:** 6–7 months · **Meeting:** biweekly team integration (Sat 14:00 China time) on Teams
-> **Region:** China · **Time resolution:** 1 hour · **Currency:** CNY (¥)
+> **Region:** **USA** — City of Boulder (primary) + City of Palo Alto (validation); contract
+> amendment **A1**, 2026-09-14 · **Time resolution:** 1 hour · **Currency:** `_cny` column names
+> retained for compatibility; the USD decision is still open (A1)
 
 An integrated software prototype that uses data analytics, machine learning, and optimisation
 to make EV charging **smarter, cheaper, and greener** — forecasting charging stress, aligning it

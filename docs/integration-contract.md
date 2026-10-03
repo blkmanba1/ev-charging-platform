@@ -194,6 +194,12 @@ replaced, so `data/processed/sp1-demand-forecast-v1.csv` pairs with
 
 ## Decisions made at kickoff
 
+> ⚠️ **Historical record — region and currency are superseded by amendment A1 (2026-09-14).**
+> Everything below is kept verbatim so the reasoning stays on the record. The China-only scope and
+> CNY do **not** describe the project as it now stands: the region moved off China, and CNY has no
+> basis in the datasets actually used. **A1 governs.** Read this section as "what we decided in
+> September", not as current requirements.
+
 - [x] **Resolution: 1 hour.** SP2's optimiser cost was the deciding factor.
 - [x] **Currency: CNY.** All datasets are China-specific, so GBP would mean an extra, pointless
       conversion. SP4 may display another unit if the supervisor asks, but storage is CNY.
@@ -208,22 +214,28 @@ replaced, so `data/processed/sp1-demand-forecast-v1.csv` pairs with
       **Dr Ghias confirmed that Chinese data may be used.** The international datasets are
       therefore superseded — no dual-dataset work is required.
 
-      *Housekeeping:* `data/README.md` still lists the original international suggestions under a
-      historical note. That is deliberate, so the reason for the choice stays documented if he
-      asks about it later.
+      *Housekeeping (corrected 2026-10-02):* `data/README.md` now carries the **current** register
+      at the top (Boulder primary, Palo Alto validation) and keeps the **Chinese** candidate lists
+      below it as a reconnaissance record. An earlier version of this note described that the other
+      way round — the banner at the top of this section exists because of exactly that class of drift.
 
 ## Still open
 
 - [ ] Does SP1 forecast **aggregate** demand, or **per-EV**? Affects whether SP2 schedules
       fleets or individuals. **Blocks SP2's optimiser design — settle first.**
-      *Status 2026-09-14:* SP1 delivers **aggregate** demand. The dataset SP1 secured
-      (`data/README.md`) has no vehicle identifier, so per-EV output is not derivable from it;
-      the file format above is unchanged either way, and SP2 can build against the aggregate
-      profile now. Still worth confirming with the supervisor that aggregate is acceptable.
+      *Status 2026-09-14, corrected 2026-10-02:* SP1 delivers **aggregate** demand, and SP2 can
+      build against that profile now. The original note here said the dataset has no vehicle
+      identifier and per-EV output is therefore not derivable — **that is no longer true**: Boulder
+      has none, but **Palo Alto carries a `User ID` (97% populated)** (see `data/README.md`), so
+      per-EV forecasting is a **scope decision, not a data limitation**. The file format is
+      unchanged either way. Still worth confirming with the supervisor which one to deliver.
 - [ ] Who owns the **shared tariff table** — SP2 or SP5? (Recommendation: SP2, since SP2 is the
       only consumer that needs it at run time; SP5 reads it read-only.)
-- [ ] Which **Chinese grid carbon intensity** source do we cite for SP5's baseline? A published
-      national/provincial factor is preferable to a self-computed one — it will need a citable
-      reference in the dissertation.
-- [ ] Does the **UK supervisor expect GBP** anywhere in the final report? If so, SP5 produces CNY
-      as the primary figure and adds a GBP conversion column at report time only.
+- [ ] Which **grid carbon intensity** source do we cite for SP5's baseline? A published regional
+      factor is preferable to a self-computed one — it will need a citable reference in the
+      dissertation. **The region must match SP1's sites (A1).** The Chinese route closed with the
+      data decision, and the GB option listed in `data/README.md` does not match either; the item
+      is open and a US regional factor is the expected direction.
+- [ ] Which **currency** does the final report present? A1 left this open: the data carry no price
+      column, the tariff survey is in USD, and the contract columns keep their `_cny` names for
+      compatibility. A rename is a minor schema bump and belongs in the same PR.

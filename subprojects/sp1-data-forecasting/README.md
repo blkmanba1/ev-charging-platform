@@ -1,7 +1,8 @@
 # SP1 — EV Charging Data Analysis and Demand Forecasting
 
 **Owner:** Xu Yuxuan (徐宇轩)
-**Consumes:** Chinese public EV charging datasets (session records or hourly load series)
+**Consumes:** official US municipal EV charging datasets — City of Boulder (primary) and City of
+Palo Alto (validation), session records with metered kWh (contract amendment A1)
 **Produces:** `data/processed/sp1-demand-forecast-v1.csv` → SP2, SP4, SP5
 **Status:** Phase 1/2 implementation running on real data (see *Results* below)
 
