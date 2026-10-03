@@ -3,7 +3,9 @@
 > **Final Year Project** — University of Glasgow (Glasgow College UESTC)
 > **Supervisor:** Dr Amer Ghias
 > **Duration:** 6–7 months · **Meeting:** biweekly team integration (Sat 14:00 China time) on Teams
-> **Region:** China · **Time resolution:** 1 hour · **Currency:** CNY (¥)
+> **Region:** **USA** — City of Boulder (primary) + City of Palo Alto (validation); contract
+> amendment **A1**, 2026-09-14 · **Time resolution:** 1 hour · **Currency:** `_cny` column names
+> retained for compatibility; the USD decision is still open (A1)
 
 An integrated software prototype that uses data analytics, machine learning, and optimisation
 to make EV charging **smarter, cheaper, and greener** — forecasting charging stress, aligning it
@@ -114,6 +116,10 @@ Recommended stacks (from the supervisor):
 | [`docs/meeting-notes/`](docs/meeting-notes/) | One file per meeting: `YYYY-MM-DD.md` |
 | [`docs/team-setup.md`](docs/team-setup.md) | QQ group, Teams meetings, repository access, and how we communicate |
 | [`docs/handoff.md`](docs/handoff.md) | **Current project state — start here if you are new to the repo** |
+| [`docs/phase1-report/`](docs/phase1-report/) | SP1 Phase-1 report (PDF + LaTeX source) |
+| [`docs/literature-review/`](docs/literature-review/) | Literature review, 21 DOI-verified references (PDF + BibTeX) |
+| [`docs/tariff-sources.md`](docs/tariff-sources.md) | Verified US tariff sources for SP2's cost model |
+| [`data/README.md`](data/README.md) | Dataset register: what is official, what is not, and the cleaning caveats |
 
 ---
 

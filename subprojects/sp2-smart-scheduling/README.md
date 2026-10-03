@@ -13,10 +13,13 @@
 ## Candidate approaches
 Linear Programming · Genetic Algorithms · Rule-Based Heuristics (Python / MATLAB)
 
-## Tariffs — China
-Use China's **peak-valley time-of-use tariff** (峰谷分时电价) from NDRC and provincial price
-bureaus. This is a genuine Chinese policy mechanism and a natural fit for the optimiser — see
-`data/README.md`. Costs are in **CNY**.
+## Tariffs — United States
+Neither dataset carries a price column, so the schedule must come from a utility source matching the
+sites in use (contract amendment **A1**). Boulder: **OpenEI URDB** bulk CSV (no key) for the ToU
+period mapping plus **Xcel's own rate-summary PDFs** for all-in $/kWh. Palo Alto: its tiered
+residential **E-1** schedule, declared **out of ToU scope**, so the peak-shifting demonstration runs
+on Boulder only. Verified sources and the two implementation traps are in `docs/tariff-sources.md`
+(tracking issue **#2**). Stored prices keep the `_cny` column names until the team locks USD (A1).
 
 ## Headline scenario
 50 EVs plugging in at 18:00 — show the platform shifting load to midnight.

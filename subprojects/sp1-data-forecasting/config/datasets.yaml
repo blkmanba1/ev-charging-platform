@@ -1,0 +1,178 @@
+# Raw-dataset adapters for SP1.
+#
+# Every dataset in data/raw/ is described here so that the loader stays generic:
+# `column_map` maps our canonical names to the dataset's own column names, and
+# `scales` converts units. Nothing here contains data — datasets stay git-ignored
+# and are recorded in data/README.md.
+#
+# Canonical names understood by `kind: sessions`
+#   start          (required)  connection timestamp
+#   end                        disconnection timestamp
+#   duration_min               session length in minutes (alternative to `end`)
+#   energy_kwh                 energy delivered
+#   power_kw                   power (used to derive energy, or energy to derive `end`)
+#   ev_id, station_id, session_id             optional identifiers
+#
+# Canonical names understood by `kind: hourly_load`
+#   timestamp      (required)  interval start
+#   energy_kwh                 energy per interval, or
+#   power_kw                   average power per interval (kW == kWh over 1 h)
+#
+# `timezone` is the timezone the file's timestamps are written in; storage is
+# always converted to UTC. `scales` multiplies a column, e.g. Wh -> kWh is 0.001.
+#
+# Fetch a registered dataset with:
+#   python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset <key>
+
+datasets:
+  # ---------------------------------------------------------------------------
+  # City of Boulder (Colorado) Open Data — "Electric Vehicle Charging Station
+  # Data", CC0 1.0 (public domain dedication). Official municipal open data and
+  # one of the three sources the supervisor originally recommended.
+  # https://open-data.bouldercolorado.gov/
+  #
+  # PRIMARY DATASET for SP1 (team decision 2026-09-14: the downloaded official
+  # non-Chinese sources are used; the Chinese and member-only sources are not).
+  #
+  # Notes that matter for modelling:
+  #  * `Energy__kWh_` is METERED delivered energy (not a rated power), so this
+  #    dataset does not need the power x duration approximation.
+  #  * `duration_min` is mapped to `Charging_Time__hh_mm_ss_`, NOT to the
+  #    occupancy window: median occupancy is 1.6 h but the tail runs to hundreds
+  #    of hours (cars left plugged in), which would smear the load profile.
+  #  * All columns arrive as strings; the adapter casts them.
+  # ---------------------------------------------------------------------------
+  us-boulder-ev:
+    kind: sessions
+    timezone: America/Denver
+    description: >-
+      City of Boulder Open Data, "Electric Vehicle Charging Station Data" —
+      148,136 charging transactions at 50 city-owned Level 2 stations,
+      2018-01-02 to 2023-12-01, metered energy in kWh, CC0 1.0
+    licence: CC0 1.0 (public domain dedication)
+    url: https://open-data.bouldercolorado.gov/
+    path: boulder-ev/Boulder_EV_Charging_Station_Data.csv
+    column_map:
+      start: Start_Date___Time
+      energy_kwh: Energy__kWh_
+      duration_min: Charging_Time__hh_mm_ss_
+      station_id: Station_Name
+
+  # ---------------------------------------------------------------------------
+  # City of Palo Alto Open Data — "Electric Vehicle Charging Station Usage
+  # (July 2011 - Dec 2020)", PDDL (public domain dedication). Official municipal
+  # open data: 9.4 years, 259,415 sessions.
+  #
+  # VALIDATION dataset (team decision 2026-09-14): longer history than Boulder and
+  # the only open source here carrying a `User ID`, so it is the one that could
+  # support *per-EV* forecasting if the team decides to answer that open contract
+  # question.
+  #
+  # Same traps as Boulder (both are ChargePoint exports): use the charging time,
+  # not the occupancy window, and energy is metered rather than rated.
+  # ---------------------------------------------------------------------------
+  us-palo-alto-ev:
+    kind: sessions
+    timezone: America/Los_Angeles
+    description: >-
+      City of Palo Alto Open Data, "Electric Vehicle Charging Station Usage
+      (July 2011 - Dec 2020)" — 259,415 charging transactions at 47 city
+      stations, metered energy in kWh, per-user IDs, PDDL
+    licence: PDDL (public domain dedication)
+    url: https://data.paloalto.gov/
+    path: palo-alto-194693/ChargePoint_Data_2011-2020.download
+    column_map:
+      start: Start Date
+      energy_kwh: Energy (kWh)
+      duration_min: Charging Time (hh:mm:ss)
+      station_id: Station Name
+      ev_id: User ID
+
+  # ---------------------------------------------------------------------------
+  # Yu, Q. — "Electric vehicle charging order data" (Beijing / Shanghai /
+  # Guangzhou, China), figshare, MIT licence.
+  # DOI 10.6084/m9.figshare.28263986.v1
+  #
+  # NOT IN USE (team decision 2026-09-14). Kept registered so the evaluation stays
+  # on record and anyone can re-run it, but the contract outputs come from the
+  # official non-Chinese sources above.
+  #
+  # `power` in the source is the **rated power of the charging gun in kW**, not a
+  # measured delivered power, so energy is derived as power x duration — an upper
+  # bound on delivered energy (see data/README.md).
+  # ---------------------------------------------------------------------------
+  cn-charging-orders:
+    kind: sessions
+    timezone: Asia/Shanghai
+    description: >-
+      figshare 28263986 "Electric vehicle charging order data" (Yu, Q.) —
+      1,295,394 charging orders from Beijing, Shanghai and Guangzhou, all three
+      public-station networks, 2024-01-17 to 2024-02-18
+    licence: MIT
+    url: https://doi.org/10.6084/m9.figshare.28263986.v1
+    paths:
+      - figshare-28263986/csv/Beijing_charge_orders/bjgunrecords.csv
+      - figshare-28263986/csv/Shanghai_charge_orders/shgunrecords.csv
+      - figshare-28263986/csv/Guangzhou_charge_orders/gzgunrecords.csv
+    column_map:
+      start: time_start
+      end: time_end
+      power_kw: power
+      station_id: stationId
+
+  cn-charging-orders-beijing:
+    kind: sessions
+    timezone: Asia/Shanghai
+    description: >-
+      figshare 28263986, Beijing subset only — 467,940 orders, 749 stations
+    licence: MIT
+    url: https://doi.org/10.6084/m9.figshare.28263986.v1
+    path: figshare-28263986/csv/Beijing_charge_orders/bjgunrecords.csv
+    column_map:
+      start: time_start
+      end: time_end
+      power_kw: power
+      station_id: stationId
+
+  cn-charging-orders-shanghai:
+    kind: sessions
+    timezone: Asia/Shanghai
+    description: >-
+      figshare 28263986, Shanghai subset only — 358,849 orders, 657 stations
+    licence: MIT
+    url: https://doi.org/10.6084/m9.figshare.28263986.v1
+    path: figshare-28263986/csv/Shanghai_charge_orders/shgunrecords.csv
+    column_map:
+      start: time_start
+      end: time_end
+      power_kw: power
+      station_id: stationId
+
+  cn-charging-orders-guangzhou:
+    kind: sessions
+    timezone: Asia/Shanghai
+    description: >-
+      figshare 28263986, Guangzhou subset only — 468,605 orders, 441 stations
+    licence: MIT
+    url: https://doi.org/10.6084/m9.figshare.28263986.v1
+    path: figshare-28263986/csv/Guangzhou_charge_orders/gzgunrecords.csv
+    column_map:
+      start: time_start
+      end: time_end
+      power_kw: power
+      station_id: stationId
+
+  # ---------------------------------------------------------------------------
+  # Template for a new dataset — copy, fill in, and add a row to the register in
+  # data/README.md in the same pull request.
+  # ---------------------------------------------------------------------------
+  # example-dataset:
+  #   kind: hourly_load
+  #   path: example/load.csv
+  #   timezone: Asia/Shanghai
+  #   description: "Example hourly station load series (placeholder)"
+  #   licence: "CC BY 4.0"
+  #   url: "https://example.invalid/dataset"
+  #   column_map:
+  #     timestamp: "datetime"
+  #     power_kw: "power"

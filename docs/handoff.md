@@ -3,7 +3,13 @@
 **Purpose:** a fresh session (or a teammate) should be able to pick this project up from this
 file alone. Written at the end of the planning/analysis stage.
 
-**Last updated:** 2026-09-14
+**Last updated:** 2026-10-02
+
+> **Scope correction (2026-10-02).** This file was written on 2026-09-14 and still carried the
+> original China-only wording in several places. The project moved to the official US municipal
+> datasets on 2026-09-14 (contract amendment **A1**), and every region statement below has now been
+> brought in line with it. Where a line still says "China", it is history or a closed route, not a
+> requirement.
 
 ---
 
@@ -15,9 +21,9 @@ file alone. Written at the end of the planning/analysis stage.
 | Task board | Trello, card list in `docs/trello-board.md` | team |
 | Team comms | **QQ group, students only** | team |
 | Comms with supervisor | Teams meetings + email | team |
-| Datasets | **Chinese data — approved by Dr Ghias** | supervisor |
+| Datasets | **Official US municipal open data** — City of Boulder (primary) + City of Palo Alto (validation); the supervisor accepts either Chinese or US data | team + supervisor |
 | Time resolution | **1 hour** | team |
-| Currency | **CNY (¥)** | team |
+| Currency | **CNY (¥)** — *superseded, see contract amendment A1; no tariff data exists in either dataset* | team |
 | Storage timezone | **UTC** (display handled by SP4) | team |
 | Scenario hand-off | **CSV** | team |
 
@@ -25,7 +31,10 @@ Full detail: `docs/integration-contract.md`.
 
 ## 2. Meeting logistics
 
-- Next meeting: **Saturday 2026-09-26, 14:00 China time (UTC+8) = 07:00 UK**
+- Next meeting: **Saturday 2026-10-03, 13:00 China time (UTC+8) = 06:00 UK** — announced by the
+  supervisor **verbally**; the recurring invitation still shows Saturday 14:00 and has **not** been
+  updated, so confirm before relying on it (see the workspace's
+  `回复导师-会议改期确认-10-03.md`)
 - Recurring: **every two weeks on Saturday** through 2027-06-13
 - Platform: Microsoft Teams (link and passcode are in the calendar invitation — deliberately
   **not** stored in this public repo)
@@ -35,24 +44,41 @@ Full detail: `docs/integration-contract.md`.
 
 ## 3. Team & ownership
 
-| Sub-project | Owner | Directory |
-|---|---|---|
-| SP1 — Data Analysis & Demand Forecasting | Xu Yuxuan | `subprojects/sp1-data-forecasting/` |
-| SP2 — Smart Charging Scheduling | Xie Letian | `subprojects/sp2-smart-scheduling/` |
-| SP3 — Renewable-Aware Charging Management | **unallocated** | `subprojects/sp3-renewable-aware/` |
-| SP4 — Monitoring & Visualisation Platform | Li Chunren | `subprojects/sp4-monitoring-dashboard/` |
-| SP5 — Economic, Environmental & System Assessment | He Zimo | `subprojects/sp5-system-assessment/` |
+| Sub-project | Owner | Directory | Phase-1 status (2026-09-14) |
+|---|---|---|---|
+| SP1 — Data Analysis & Demand Forecasting | Xu Yuxuan | `subprojects/sp1-data-forecasting/` | **Phase 1 complete** — official datasets secured (City of Boulder primary, City of Palo Alto validation), 76 tests, contract outputs produced |
+| SP2 — Smart Charging Scheduling | Xie Letian | `subprojects/sp2-smart-scheduling/` | not started |
+| SP3 — Renewable-Aware Charging Management | **unallocated** | `subprojects/sp3-renewable-aware/` | not started |
+| SP4 — Monitoring & Visualisation Platform | Li Chunren | `subprojects/sp4-monitoring-dashboard/` | not started |
+| SP5 — Economic, Environmental & System Assessment | He Zimo | `subprojects/sp5-system-assessment/` | not started |
 
 ## 4. Open items
 
 1. **SP3 owner** — the official brief says five students; only four are assigned. Asked of the
    supervisor; awaiting an answer.
-2. **Aggregate vs per-EV forecast** — the only interface question still blocking SP2's optimiser
-   design. Asked of the supervisor in the reply draft.
-3. **Chinese grid carbon intensity source** for SP5's baseline — needs a citable reference.
-4. **Who owns the shared tariff table** (recommendation: SP2).
+2. **Aggregate vs per-EV forecast** — SP1 currently forecasts **aggregate** demand. The dataset
+   actually answers this differently now: Boulder has no vehicle identifier, but **Palo Alto does**
+   (`User ID`, 97% populated), so a per-EV variant is possible without new data — it is a scope
+   decision, not a data limitation. Still worth confirming with the supervisor.
+3. **Carbon intensity source** for SP5's baseline — the Chinese route is closed with the data
+   decision. Options are recorded in `data/README.md` (e.g. keyless NESO Carbon Intensity API);
+   needs a decision and a citable reference.
+4. **Who owns the shared tariff table** (recommendation: SP2) — it is a **blocker**: the Boulder/Palo
+   Alto data contain no tariff column. The source survey is now done and written up in
+   `docs/tariff-sources.md`, with the verified artefacts in `data/raw/tariff/`: for Boulder 2018–2023
+   use OpenEI URDB (bulk CSV, no key) for the ToU period mapping and Xcel's own rate-summary PDFs for
+   all-in $/kWh. **Decided 2026-09-22:** Palo Alto is priced on its tiered residential E-1 schedule and
+   declared out of ToU scope, so the peak-shifting demonstration runs on Boulder and SP5 reports the
+   two sites separately. See contract amendment **A1**.
 5. **Trello board** — created? Card list is ready in `docs/trello-board.md`.
 6. **Reply email** — drafted but not sent. See the workspace's `回复导师邮件草稿.md`.
+7. **SP1 dataset (closed 2026-09-14).** Chosen: **City of Boulder** (official municipal open data,
+   **CC0 1.0**, 148,136 sessions, 5.9 years, metered kWh) as primary, **City of Palo Alto**
+   (official, PDDL, 259,415 sessions, 9.4 years, per-user IDs) as validation — both
+   supervisor-recommended, both fetchable with no registration, both scripted in
+   `scripts/fetch_datasets.py`. **Not used:** the Chinese third-party figshare dataset and China
+   Charging Alliance member material (monthly aggregates only, verified with a member account).
+   Full source evaluation: `data/README.md`.
 
 ## 5. Where to start implementing
 
@@ -65,13 +91,28 @@ Read in this order:
 
 Then Phase 1 (Months 1–2), per the supervisor's roadmap:
 
-| SP | Phase 1 task |
-|---|---|
-| SP1 | Identify and clean Chinese public EV charging datasets |
-| SP2 | Research Chinese peak-valley time-of-use tariff structures |
-| SP3 | Solar resource data + PV modelling (pending owner) |
-| SP4 | Set up the development environment (Dash/Streamlit or React/Node + SQLite/PostgreSQL) |
-| SP5 | Benchmark Chinese commercial charging costs; establish gCO₂/kWh baseline |
+| SP | Phase 1 task | Status |
+|---|---|---|
+| SP1 | Identify and clean official municipal EV charging datasets | **done** — Boulder (primary) + Palo Alto (validation); see `subprojects/sp1-data-forecasting/README.md` |
+| SP2 | Research ToU / peak-valley tariff structures for the sites in use | **source survey done** — `docs/tariff-sources.md`, tracking issue #2 |
+| SP3 | Solar resource data + PV modelling (pending owner) | to do |
+| SP4 | Set up the development environment (Dash/Streamlit or React/Node + SQLite/PostgreSQL) | to do |
+| SP5 | Benchmark commercial charging costs; establish gCO₂/kWh baseline | to do — carbon source undecided (the GB API listed in `data/README.md` does not match the sites) |
+
+SP1's outputs are already contract-compliant, so **SP2 and SP4 can develop against real files
+today** rather than mock data:
+
+```bash
+python subprojects/sp1-data-forecasting/scripts/fetch_datasets.py --dataset us-boulder-ev
+python subprojects/sp1-data-forecasting/scripts/run_sp1.py --dataset us-boulder-ev
+# -> data/processed/sp1-demand-forecast-v1.csv      (+ .meta.json)
+# -> data/processed/sp1-baseline-demand-v1.csv      (+ .meta.json)  "everyone plugs in at 18:00"
+```
+
+The uncontrolled baseline shows a **3.8× peak increase** over the forecast peak on the same window
+(94.5 kWh → 362.5 kWh, energy conserved to 0.05%) — that is the number SP2's scheduler exists to
+reduce. *(The 11.6× quoted here earlier came from the retired Chinese third-party dataset and no
+longer describes any dataset in use.)*
 
 ## 6. Things easily forgotten
 
@@ -79,15 +120,19 @@ Then Phase 1 (Months 1–2), per the supervisor's roadmap:
   dataset in `data/README.md` in the same PR.
 - **The repo is public.** No datasets, credentials, or meeting links in commits.
 - **A decision made in QQ does not exist until it is in the repository.**
-- `data/README.md` contains the researched candidate list of **Chinese** data sources
-  (charging sessions, peak-valley tariffs, solar, grid carbon intensity). Start there rather
-  than searching from scratch.
-- **Known honest difficulty:** China publishes much less open session-level EV charging data
-  than the US or EU. The best public options are research datasets on Science Data Bank
-  (scidb.cn). A calibrated synthetic profile built from published Chinese aggregates is the
-  documented fallback — it must be labelled as synthetic.
-- **China's peak-valley ToU tariff (峰谷分时电价)** is a genuine Chinese policy instrument and
-  the natural mechanism for SP2's scheduler. This is a strength of the project, not a workaround.
+- `data/README.md` holds the **current** dataset register at the top (Boulder primary, Palo Alto
+  validation). The Chinese candidate lists below it are a **reconnaissance record**: they were
+  checked, and they cannot carry SP1 because no official Chinese source publishes session-level
+  data. Start there rather than searching from scratch, but do not read that section as a
+  requirement.
+- **Known honest difficulty (China route — closed):** China publishes far less open session-level EV
+  charging data than the US or EU; the best public options are research datasets on Science Data
+  Bank (scidb.cn). A calibrated synthetic profile built from published Chinese aggregates was the
+  documented fallback, and it would have had to be labelled synthetic. This is why SP1 runs on the
+  official US municipal sources under A1.
+- **Peak-valley ToU pricing is the mechanism** for SP2's scheduler, and it is not China-exclusive:
+  the US utility schedules surveyed in `docs/tariff-sources.md` carry the same structure, and
+  Boulder's is the one used for the peak-shifting demonstration.
 
 ## 7. Source material (workspace, not in the repo)
 
