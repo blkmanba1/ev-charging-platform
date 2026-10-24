@@ -6,7 +6,8 @@ eight pages maximum, with the work plan on a single page.
 | File | What it is |
 | --- | --- |
 | `preliminary-report.tex` | source, `article` + `ctex`, XeLaTeX only |
-| `preliminary-report.pdf` | built output, 8 pages |
+| `preliminary-report.pdf` | built output, 8 pages — the file that gets submitted |
+| `preliminary-report-bilingual.tex` / `.pdf` | 中文对照版 (10 pages): the same English text, each paragraph followed by its Chinese translation in grey. Reading copy for the author and for explaining the work in Chinese; **not** the submission |
 | `plan/gantt.xlsx` | the work plan as an editable workbook: `Work plan` (this sub-project, the sheet the PDF carries), `Group overview` (all five sub-projects, for group planning), `Milestones` |
 | `plan/make_gantt.py` | regenerates the workbook from the sub-project definitions in this repository |
 | `plan/gantt.png` | the chart as rendered for the PDF |
@@ -19,6 +20,11 @@ bibtex  preliminary-report
 xelatex preliminary-report.tex
 xelatex preliminary-report.tex
 ```
+
+The bilingual copy builds the same way from `preliminary-report-bilingual.tex`. It is a second
+document rather than a translation layer, so editing the submission means editing both files; that
+is deliberate, because the two are allowed to diverge (the Chinese one carries the explanatory
+asides that must not appear in a submission, such as why the Gantt shows only one sub-project).
 
 Bibliography resolves through `../literature-review/references.bib`, so the twenty references in
 this report are the same verified entries as the literature review rather than a second list.
