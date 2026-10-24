@@ -91,8 +91,8 @@ So we agree the interfaces **now**, while everything is still cheap to change.
 |---|---|---|---|
 | `timestamp` | string | — | ISO-8601 UTC, interval **start** |
 | `predicted_demand_kwh` | float | kWh | Predicted energy demanded in this interval |
-| `lower_bound_kwh` | float | kWh | Lower confidence bound (empty if not modelled) |
-| `upper_bound_kwh` | float | kWh | Upper confidence bound (empty if not modelled) |
+| `lower_bound_kwh` | float | kWh | Lower end of the 90% prediction interval (empty if not modelled) |
+| `upper_bound_kwh` | float | kWh | Upper end of the 90% prediction interval (empty if not modelled) |
 
 **Optional second file** for the "uncontrolled" baseline comparison:
 `data/processed/sp1-baseline-demand-v1.csv`, identical columns, representing the

@@ -261,7 +261,7 @@ gap-free. Training history per origin is capped at 180 days.
 
 Accuracy is reported as WAPE (total absolute error divided by total demand), which
 stays stable when many intervals have near-zero demand, alongside MAE, RMSE and $R^2$.
-Confidence bounds are empirical: $\hat{y} \pm 1.645\,\sigma$ where $\sigma$ is the residual
+Prediction intervals are empirical: $\hat{y} \pm 1.645\,\sigma$ where $\sigma$ is the residual
 standard deviation at the same horizon in the backtest, clipped at zero.
 
 % ============================================================================

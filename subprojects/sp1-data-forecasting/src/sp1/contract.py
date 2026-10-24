@@ -306,7 +306,7 @@ def validate_series(
         if (lower[both] > upper[both]).any():
             problems.append("lower_bound_kwh exceeds upper_bound_kwh in some rows")
         if (lower[both] < 0).any() or (upper[both] < 0).any():
-            problems.append("confidence bounds contain negative values")
+            problems.append("prediction interval bounds contain negative values")
         outside = both & ((predicted < lower) | (predicted > upper))
         if outside.any():
             problems.append(

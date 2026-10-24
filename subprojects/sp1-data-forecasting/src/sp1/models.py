@@ -197,7 +197,7 @@ class BacktestResult:
         ``horizon``, ``origin`` — one row per forecast interval.
     metrics : dict
         Overall metrics plus ``per_horizon`` (list of dicts) and
-        ``residual_std_by_horizon`` (used to build confidence bounds).
+        ``residual_std_by_horizon`` (used to build the prediction intervals).
     """
 
     predictions: pd.DataFrame

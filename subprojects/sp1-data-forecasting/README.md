@@ -86,7 +86,7 @@ sp1-data-forecasting/
    does not, and that is a finding worth reporting rather than hiding.
 5. **WAPE leads the metrics.** Demand is zero or near-zero for much of the day, which makes MAPE
    explode; WAPE (total absolute error ÷ total demand) is stable and reads naturally.
-6. **Confidence bounds are empirical, not model-based.** `prediction ± 1.645 × σ(residual)` at the
+6. **Prediction intervals are empirical, not model-based.** `prediction ± 1.645 × σ(residual)` at the
    same horizon, taken from the backtest. The method is stated in the `.meta.json` so SP5 does not
    mistake it for a model-derived interval.
 7. **The 1-hour demand series is *connected charging power*.** For session data, energy is spread
