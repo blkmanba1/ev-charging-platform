@@ -117,6 +117,7 @@ Recommended stacks (from the supervisor):
 | [`docs/team-setup.md`](docs/team-setup.md) | QQ group, Teams meetings, repository access, and how we communicate |
 | [`docs/handoff.md`](docs/handoff.md) | **Current project state — start here if you are new to the repo** |
 | [`docs/phase1-report/`](docs/phase1-report/) | SP1 Phase-1 report (PDF + LaTeX source) |
+| [`docs/preliminary-report/`](docs/preliminary-report/) | Project Specification and Preliminary Report (8 pages) with the editable Gantt workbook |
 | [`docs/literature-review/`](docs/literature-review/) | Literature review, 21 DOI-verified references (PDF + BibTeX) |
 | [`docs/tariff-sources.md`](docs/tariff-sources.md) | Verified US tariff sources for SP2's cost model |
 | [`data/README.md`](data/README.md) | Dataset register: what is official, what is not, and the cleaning caveats |
