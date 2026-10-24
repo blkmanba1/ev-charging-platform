@@ -7,7 +7,7 @@ eight pages maximum, with the work plan on a single page.
 | --- | --- |
 | `preliminary-report.tex` | source, `article` + `ctex`, XeLaTeX only |
 | `preliminary-report.pdf` | built output, 8 pages |
-| `plan/gantt.xlsx` | the Gantt chart as an editable workbook (two sheets: `Gantt`, `Milestones`) |
+| `plan/gantt.xlsx` | the work plan as an editable workbook: `Work plan` (this sub-project, the sheet the PDF carries), `Group overview` (all five sub-projects, for group planning), `Milestones` |
 | `plan/make_gantt.py` | regenerates the workbook from the sub-project definitions in this repository |
 | `plan/gantt.png` | the chart as rendered for the PDF |
 
@@ -39,10 +39,14 @@ pdftoppm -r 300 -png -singlefile gantt.pdf gantt_raw
 # crop the white margin, then save as gantt.png at 300 dpi
 ```
 
-`make_gantt.py` carries the content: five sub-project tracks plus six milestones. The work packages
-are the ones the repository defines in `subprojects/*/README.md`, the edges are the ones
-`docs/integration-contract.md` fixes, and the status column records what exists on 24 October 2026
-rather than what is hoped for.
+`make_gantt.py` carries the content. The `Work plan` sheet is the one the PDF shows: the five main
+tasks of the FYP task book, each broken into sub-tasks, because the handbook asks for "sub-tasks
+under the main tasks already specified by your Supervisor" and requires the plan as a Gantt sheet
+(p12). The other sub-projects appear there only as grey external dependencies, since p13 states
+that in a shared project the supervisor allocates **individual** work packages — a student's plan
+should not schedule other people's work. The `Group overview` sheet keeps the five-track view for
+group discussions; the status column in both records what exists on 24 October 2026 rather than what
+is hoped for.
 
 ## Constraints that shaped the document
 
