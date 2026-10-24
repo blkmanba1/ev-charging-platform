@@ -94,8 +94,8 @@ def build() -> Workbook:
     ws.merge_cells(f"A2:{last_col}2")
     c = ws["A2"]
     c.value = ("Project Gantt, September 2026 to June 2027  |  baseline of 24 October 2026  |  "
-               "work packages derived from the repository (subprojects/*/README.md, "
-               "docs/integration-contract.md)")
+               "work packages and interfaces from the repository, milestones from the FYP handbook, "
+               "month spans are planning judgements")
     c.font = Font(name="Calibri", size=9, italic=True, color="404040")
     ws.row_dimensions[2].height = 14
 
@@ -165,6 +165,8 @@ def build() -> Workbook:
         "SP1 bars marked Done are evidenced by the merged pipeline, the 77 passing tests and the Phase-1 report.",
         "SP4's September bar records an initial dashboard script that exists only on a fork, not in the main repository.",
         "Consumers and producers of every arrow are fixed in docs/integration-contract.md.",
+        "Nothing in the repository records which month a work package runs: the bars are a baseline "
+        "schedule derived from the deliverable dates, and may be moved without changing the plan's content.",
     ]
     for n in notes:
         ws.merge_cells(start_row=row, start_column=1, end_row=row, end_column=13)
