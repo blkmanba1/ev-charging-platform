@@ -6,7 +6,7 @@ eight pages maximum, with the work plan on a single page.
 | File | What it is |
 | --- | --- |
 | `preliminary-report.tex` | source, `article` + `ctex`, XeLaTeX only |
-| `preliminary-report.pdf` | built output, 8 pages — the file that gets submitted |
+| `preliminary-report.pdf` | built output, 8 pages — the file that gets submitted, renamed to `2959485_Xu_UESTCHN4008P_Specification_Report_26-27.pdf` for the Moodle dropbox |
 | `preliminary-report-bilingual.tex` / `.pdf` | 中文对照版 (10 pages): the same English text, each paragraph followed by its Chinese translation in grey. Reading copy for the author and for explaining the work in Chinese; **not** the submission |
 | `plan/gantt.xlsx` | the work plan as an editable workbook: `Work plan` (this sub-project, the sheet the PDF carries), `Group overview` (all five sub-projects, for group planning), `Milestones` |
 | `plan/make_gantt.py` | regenerates the workbook from the sub-project definitions in this repository |
